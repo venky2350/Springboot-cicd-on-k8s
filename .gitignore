@@ -1,0 +1,36 @@
+# Maven
+target/
+*.log
+
+# Sonar
+.sonar/
+sonar-report.txt
+
+# IDEs
+.idea/
+*.iml
+*.swp
+*.swo
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+
+# Trivy
+trivy-report.txt
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Kube configs (if any)
+.kube/
+
+# Secrets
+secrets.yaml
+*.crt
+*.key
