@@ -119,3 +119,35 @@ Springboot-cicd-on-k8s
 +-------------------------------------------------------+
 
 
+##Pipeline Sequence Diagram (Time Flow):
+----------------------------------------
+
+```bash
+
+```mermaid
+sequenceDiagram
+    participant Dev as 👩💻 Developer
+    participant GH as 🌐 GitHub
+    participant J as 🛠️ Jenkins
+    participant SQ as 📊 SonarQube
+    participant T as 🔒 Trivy
+    participant D as 🐳 Docker Hub
+    participant A as 🚀 ArgoCD
+    participant K as ☸️ Kubernetes
+
+    Dev->>GH: git push
+    GH->>J: Webhook Trigger
+    J->>J: mvn clean package
+    alt Tests Pass
+        J->>SQ: Code Analysis
+        SQ-->>J: Coverage Report
+        J->>T: Scan Image
+        T-->>J: CVE Report
+        J->>D: Push Image
+        D->>A: Notify
+        A->>K: helm upgrade
+        K->>K: Rollout Pods
+    else Failure
+        J->>Slack: Alert Team
+    end
+```
