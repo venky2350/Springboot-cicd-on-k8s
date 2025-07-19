@@ -30,6 +30,8 @@ This project implements a secure and automated CI/CD pipeline for a Spring Boot 
 
 ## Project Folder Architecture:
 -------------------------------
+```bash
+
 Springboot-cicd-on-k8s
 ├── app/                             ← Spring Boot application
 │   ├── src/
@@ -84,3 +86,36 @@ Springboot-cicd-on-k8s
 │
 ├── README.md                       ← Project overview, architecture, setup
 ├── .gitignore                      ← Ignore target/, logs, reports, secrets
+
+
+## ASCII Art Version (For Quick Overview)::
+-------------------------------------------
+```bash
+
++-------------------------------------------------------+
+|       CONTINUOUS DELIVERY (JENKINS + HELM + ARGOCD)   |
++-------------------------------------------------------+
+|                                                       |
+|  JENKINS PIPELINE                                     |
+|  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐   |
+|  │ BUILD   │→ │SONARQUBE│→ │ TRIVY   │→ │ ARGOCD  │   |
+|  │ (Maven) │  │(Quality)│  │ (CVE)   │  │ (Deploy)│   |
+|  └─────────┘  └─────────┘  └─────────┘  └─────────┘   |
+|            ↓              ↓              ↓            |
+|  ┌───────────────────────────────────────────────┐    |
+|  │               QUALITY GATES                  │     |
+|  │  - Sonar: Coverage ≥80%                      │     |
+|  │  - Trivy: 0 Critical CVEs                    │     |
+|  └───────────────────────────────────────────────┘    |
+|                                                       |
++-------------------------------------------------------+
+           ↓
++-------------------------------------------------------+
+|               KUBERNETES CLUSTER                     |
+|  ┌─────────────────┐        ┌─────────────────┐      |
+|  │ SPRING BOOT POD │←──────→│ NGINX POD       │      |
+|  │ (app:8080)      │ Ingress│ (admin/reports) │      |
+|  └─────────────────┘        └─────────────────┘      |
++-------------------------------------------------------+
+
+
