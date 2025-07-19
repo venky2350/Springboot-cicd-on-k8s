@@ -117,8 +117,3 @@ Springboot-cicd-on-k8s
 |  │ (app:8080)      │ Ingress│ (admin/reports) │      |
 |  └─────────────────┘        └─────────────────┘      |
 +-------------------------------------------------------+
-
-
-##Pipeline Sequence Diagram (Time Flow):
-----------------------------------------
-![alt text](image.png)
