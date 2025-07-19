@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Jenkins CI/CD Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+            margin-top: 50px;
+        }
+        img {
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1 th:text="${message}">Welcome to Jenkins Demo!</h1>
+    <img src="/tech-stack.png" alt="Tech Stack">
+</body>
+</html>

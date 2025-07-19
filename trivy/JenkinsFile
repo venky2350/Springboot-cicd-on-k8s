@@ -1,0 +1,5 @@
+stage('Trivy Security Scan') {
+    steps {
+        sh './scan-trivy.sh'
+    }
+}

@@ -40,14 +40,32 @@ pipeline {
         '''
       }
     }
-
-    stage('Deploy to K8s') {
+    stage('Trivy Security Scan') {
+    steps {
+        sh './scan-trivy.sh'
+    }
+}
+stage('Copy Reports for Nginx') {
+    steps {
+        sh '''
+        mkdir -p reports
+        cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "No Trivy report"
+        cp sonar-report.html reports/sonar-report.html || echo "No Sonar HTML report"
+        '''
+    }
+}
+stage('Deploy to K8s') {
       steps {
         sh '''
         kubectl apply -f manifests/namespace.yaml
         kubectl apply -f manifests/
         '''
       }
+    }
+  }
+  post{
+    always{
+      cleanWs()
     }
   }
 }

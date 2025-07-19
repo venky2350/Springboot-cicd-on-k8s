@@ -1,0 +1,5 @@
+**Excute the Trivy commands at once:**
+----------------------------------
+```bash
+
+chmod +x scan-trivy.sh

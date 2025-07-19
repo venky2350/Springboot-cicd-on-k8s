@@ -1,13 +1,25 @@
 #!/bin/bash
-IMAGE_NAME=your-dockerhub-username/hello-jenkins:latest
 
-echo "🔍 Scanning image: $IMAGE_NAME"
-trivy image $IMAGE_NAME > trivy-report.txt
+# ----------------------------
+# Trivy Docker Image Scanner
+# ----------------------------
 
-if grep -q "CRITICAL" trivy-report.txt; then
-  echo "❌ Vulnerabilities found!"
-  cat trivy-report.txt
-  exit 1
+IMAGE_NAME=your-dockerhub-username/jenkins-demo:latest
+REPORT_DIR="trivy-reports"
+REPORT_FILE="$REPORT_DIR/image-scan-report.txt"
+
+# Ensure report directory exists
+mkdir -p "$REPORT_DIR"
+
+echo "🔍 Scanning Docker image: $IMAGE_NAME"
+trivy image "$IMAGE_NAME" > "$REPORT_FILE"
+
+if grep -q "CRITICAL" "$REPORT_FILE"; then
+    echo "❌ Critical vulnerabilities found in $IMAGE_NAME!"
+    echo "----- Report -----"
+    cat "$REPORT_FILE"
+    exit 1
 else
-  echo "✅ No critical vulnerabilities."
+    echo "✅ No critical vulnerabilities found in $IMAGE_NAME."
+    echo "Report saved to $REPORT_FILE"
 fi

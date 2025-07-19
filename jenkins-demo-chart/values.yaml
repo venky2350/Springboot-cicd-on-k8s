@@ -1,0 +1,11 @@
+springApp:
+  image: your-dockerhub-username/jenkins-demo:latest
+  port: 8080
+
+nginx:
+  image: your-dockerhub-username/nginx-reverse-proxy:latest
+  port: 80
+
+ingress:
+  enabled: true
+  host: yourproject.dev

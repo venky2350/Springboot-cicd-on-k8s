@@ -1,0 +1,7 @@
+cd nginx/
+
+# Build Docker image
+docker build -t your-dockerhub-username/nginx-reverse-proxy:latest .
+
+# Push to Docker Hub
+docker push your-dockerhub-username/nginx-reverse-proxy:latest

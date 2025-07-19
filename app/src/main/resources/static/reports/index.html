@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports</title>
+  <link rel="stylesheet" href="/reports/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <h1>System Reports</h1>
+
+    <div class="filters">
+      <label for="type">Report Type:</label>
+      <select id="type">
+        <option>All</option>
+        <option>Usage</option>
+        <option>Error</option>
+        <option>Audit</option>
+      </select>
+
+      <label for="range">Date Range:</label>
+      <input type="date" id="from"/> to <input type="date" id="to"/>
+
+      <button onclick="alert('Filter not implemented')">Apply</button>
+    </div>
+
+    <div class="report-table">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Type</th><th>Date</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>101</td><td>Usage</td><td>2025-07-18</td><td>Success</td><td><a href="#">Download</a></td></tr>
+          <tr><td>102</td><td>Error</td><td>2025-07-17</td><td>Failed</td><td><a href="#">View</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

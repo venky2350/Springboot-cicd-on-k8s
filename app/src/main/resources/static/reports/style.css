@@ -1,0 +1,46 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #eef2f5;
+  padding: 20px;
+}
+
+.container {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filters input,
+.filters select {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.report-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.report-table a {
+  color: blue;
+  text-decoration: underline;
+}

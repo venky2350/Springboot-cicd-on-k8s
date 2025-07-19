@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/admin/style.css"/>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+      <li><a href="/admin">Dashboard</a></li>
+      <li><a href="/admin/users">Users</a></li>
+      <li><a href="/admin/settings">Settings</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <h1>Welcome, Admin</h1>
+    </header>
+
+    <section class="cards">
+      <div class="card">Total Users: <strong>120</strong></div>
+      <div class="card">Active Sessions: <strong>15</strong></div>
+      <div class="card">Errors Today: <strong>2</strong></div>
+    </section>
+
+    <section class="table-section">
+      <h2>User Management</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Alice</td><td>alice@example.com</td><td>Admin</td><td>Edit | Delete</td></tr>
+          <tr><td>2</td><td>Bob</td><td>bob@example.com</td><td>User</td><td>Edit | Delete</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+cd Jenkins-Zero-To-Hero-Project/jenkins-demo-chart
+helm install jenkins-demo . --namespace devops --create-namespace
+
+Upgrade later:
+--------------
+helm upgrade jenkins-demo . -n devops
