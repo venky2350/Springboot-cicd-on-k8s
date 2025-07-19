@@ -121,8 +121,10 @@ Springboot-cicd-on-k8s
 
 ##Pipeline Sequence Diagram (Time Flow):
 ----------------------------------------
+# CI/CD Pipeline with Kubernetes
 
-```bash
+## Pipeline Sequence Diagram:
+------------------------------
 
 ```mermaid
 sequenceDiagram
@@ -151,3 +153,7 @@ sequenceDiagram
         J->>Slack: Alert Team
     end
 ```
+
+## Steps
+1. Developer pushes code to GitHub.
+2. Jenkins triggers the pipeline...
