@@ -20,7 +20,7 @@ This project implements a secure and automated CI/CD pipeline for a Spring Boot 
 5. Docker image pushed to registry.
 6. Argo CD pulls updated manifests and deploys to Kubernetes.
 7. NGINX routes requests to `/app`, `/admin`, and `/reports`.
-8. Users access app via browser.
+8. Users access the app via a browser.
 
 > ✅ Final Output: Secure, production-grade Spring Boot app running on Kubernetes with full DevOps automation.
 
@@ -44,7 +44,7 @@ Springboot-cicd-on-k8s
 │   └── Dockerfile                 ← Dockerize Spring Boot app
 │
 ├── nginx/                           ← Nginx reverse proxy config & content
-│   ├── Dockerfile                   ← Builds image with embedded routes/reports
+│   ├── Dockerfile                   ← : Builds image with embedded routes/reports
 │   ├── default.conf                 ← Nginx routing config (/app, /admin, /reports)
 │   ├── index.html                  ← Admin dashboard (HTML)
 │   └── reports/
@@ -83,7 +83,7 @@ Springboot-cicd-on-k8s
 ├── .gitignore                      ← Ignore target/, logs, reports, secrets
 
 
-## ASCII Art Version (For Quick Overview)::
+## ASCII Art Version (For Quick Overview):
 -------------------------------------------
 
 +-------------------------------------------------------+
@@ -105,17 +105,18 @@ Springboot-cicd-on-k8s
 +-------------------------------------------------------+
            ↓
 +-------------------------------------------------------+
-|               KUBERNETES CLUSTER                     |
-|  ┌─────────────────┐        ┌─────────────────┐      |
-|  │ SPRING BOOT POD │←──────→│ NGINX POD       │      |
-|  │ (app:8080)      │ Ingress│ (admin/reports) │      |
-|  └─────────────────┘        └─────────────────┘      |
+|               KUBERNETES CLUSTER                      |
+|  ┌─────────────────┐        ┌─────────────────┐       |
+|  │ SPRING BOOT POD │←──────→│ NGINX POD       │       |
+|  │ (app:8080)      │ Ingress│ (admin/reports) │       |
+|  └─────────────────┘        └─────────────────┘       |
 +-------------------------------------------------------+
-
-
 ## TECH STACK:
    -----------
+<<<<<<< HEAD
 
+=======
+>>>>>>> ab21966dc19ef7da3e35c71f22b5fbcaf455043d
 ┌───────────────────────────────────────────────────────────────────────----┐ 
 │                           TECH STACK                                      │
 ├───────────────────┬───────────────────┬───────────────────┬────────────---┤
