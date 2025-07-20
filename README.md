@@ -27,6 +27,8 @@ This project implements a secure and automated CI/CD pipeline for a Spring Boot 
 ## Project Folder Architecture:
 -------------------------------
 
+```bash
+
 Springboot-cicd-on-k8s
 ├── app/                             ← Spring Boot application
 │   ├── src/
@@ -113,10 +115,6 @@ Springboot-cicd-on-k8s
 +-------------------------------------------------------+
 ## TECH STACK:
    -----------
-<<<<<<< HEAD
-
-=======
->>>>>>> ab21966dc19ef7da3e35c71f22b5fbcaf455043d
 ┌───────────────────────────────────────────────────────────────────────----┐ 
 │                           TECH STACK                                      │
 ├───────────────────┬───────────────────┬───────────────────┬────────────---┤
