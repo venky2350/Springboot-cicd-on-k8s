@@ -1,6 +1,6 @@
 # CI/CD Pipeline for Spring Boot Microservice using Jenkins, Argo CD, Helm & Trivy on Kubernetes
 
-![CI/CD Architecture](./assets/architecture-diagram.png)
+![CI/CD Architecture]("C:\Users\Y VENKAT\Downloads\Flow Diagram.png")
 
 This project implements a secure and automated CI/CD pipeline for a Spring Boot microservice. It includes:
 
@@ -117,3 +117,25 @@ Springboot-cicd-on-k8s
 |  │ (app:8080)      │ Ingress│ (admin/reports) │      |
 |  └─────────────────┘        └─────────────────┘      |
 +-------------------------------------------------------+
+
+
+## TECH STACK:
+   -----------
+
+   ```bash
+
+┌───────────────────────────────────────────────────────────────────────----┐ 
+│                           TECH STACK                                      │
+├───────────────────┬───────────────────┬───────────────────┬────────────---┤
+│    Backend        │    DevOps         │      CI/CD        │ Cloud Services│
+├───────────────────┼───────────────────┼───────────────────┼────────────---|
+│  • Java           │  • Docker         │  • GitHub         │  • AWS EC2    │
+│  • Spring Boot    │  • Jenkins        │  • GitHub Actions │  • AWS EKS    │
+│  • Maven          │  • SonarQube      │  • Helm           │               │
+│  • Thymeleaf      │  • Trivy          │  • Argo CD        │               │
+├───────────────────┴───────────────────┴───────────────────┴────────────---|
+│                                                                           │
+│  Platform & Infrastructure: Kubernetes, Nginx, Ingress                    │
+│                                                                           |
+└───────────────────────────────────────────────────────────────────────----┘
+
