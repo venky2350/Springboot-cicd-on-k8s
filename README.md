@@ -1,7 +1,5 @@
 # CI/CD Pipeline for Spring Boot Microservice using Jenkins, Argo CD, Helm & Trivy on Kubernetes
 
-![CI/CD Architecture]("C:\Users\Y VENKAT\Downloads\Flow Diagram.png")
-
 This project implements a secure and automated CI/CD pipeline for a Spring Boot microservice. It includes:
 
 * **Jenkins** for CI/CD orchestration
@@ -26,11 +24,8 @@ This project implements a secure and automated CI/CD pipeline for a Spring Boot 
 
 > ✅ Final Output: Secure, production-grade Spring Boot app running on Kubernetes with full DevOps automation.
 
-
-
 ## Project Folder Architecture:
 -------------------------------
-```bash
 
 Springboot-cicd-on-k8s
 ├── app/                             ← Spring Boot application
@@ -90,7 +85,6 @@ Springboot-cicd-on-k8s
 
 ## ASCII Art Version (For Quick Overview)::
 -------------------------------------------
-```bash
 
 +-------------------------------------------------------+
 |       CONTINUOUS DELIVERY (JENKINS + HELM + ARGOCD)   |
@@ -121,8 +115,6 @@ Springboot-cicd-on-k8s
 
 ## TECH STACK:
    -----------
-
-   ```bash
 
 ┌───────────────────────────────────────────────────────────────────────----┐ 
 │                           TECH STACK                                      │
