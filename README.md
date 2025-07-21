@@ -130,3 +130,51 @@ Springboot-cicd-on-k8s
 │                                                                           |
 └───────────────────────────────────────────────────────────────────────----┘
 
+##Run an application on browser in local environment:
+------------------------------------------------------
+*Create an ec2 instance in AWS cloud
+       >name   : Springboot-cicd-on-k8s
+       >os     : ubuntu
+       >instance: t2.large
+       >key pair : Prometheus.pem
+       >Network settings: port - 8080
+*connect server through an ec2 instance via git bash
+        >   chmod 400 "Prometheus.pem"  
+        > ssh -i "Prometheus.pem" ubuntu@ec2-3-86-177-86.compute-1.amazonaws.com
+*Clone the project repository from GitHub 
+         > git clone <repository url></repository>
+         > root@ip-172-31-95-129:~/Springboot-cicd-on-k8s/app# 
+         > apt update -y
+         > apt install maven -y
+         > apt install openjdk-17-jdk -y
+         > apt install docker.io -y
+         > mvn clean package
+         > java -jar target/jenkins-demo-1.0.0.jar
+         
+
+
+##Trouble Shooting:
+-------------------
+#1) Thanks for sharing. Your system has a conflicting Java environment:
+
+🔍 Summary of current issue:
+java is pointing to OpenJDK 21
+
+javac (the Java compiler) is pointing to JDK 17
+
+But your Maven build uses javac --release 17, and this mismatch can cause errors if javac and java are not aligned properly.
+
+sudo update-alternatives --config java
+
+/usr/lib/jvm/java-17-openjdk-amd64/bin/java
+
+java -version
+javac -version
+
+openjdk version "17.0.x"
+javac 17.0.x
+
+ Then retry:
+
+ mvn clean package
+
