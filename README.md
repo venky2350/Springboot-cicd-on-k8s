@@ -150,7 +150,7 @@ Springboot-cicd-on-k8s
          > apt install docker.io -y
          > mvn clean package
          > java -jar target/jenkins-demo-1.0.0.jar
-         
+
 
 
 ##Trouble Shooting:
@@ -177,4 +177,20 @@ javac 17.0.x
  Then retry:
 
  mvn clean package
+#2)app(Dockerfile):
+>vi Springboot-cicd-on-k8s/app/Dockerfile
+
+FROM openjdk:17-jdk-alpine
+VOLUME /tmp
+ARG JAR_FILE=target/jenkins-demo-1.0.0.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+
+
+>Build Docker image:
+cd ~/Springboot-cicd-on-k8s/app
+docker build -t jenkins-demo:latest .
+
+>Run Docker Container:
+docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
 
