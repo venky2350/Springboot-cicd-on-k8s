@@ -150,6 +150,8 @@ Springboot-cicd-on-k8s
          > apt install docker.io -y
          > mvn clean package
          > java -jar target/jenkins-demo-1.0.0.jar
+         >docker build -t jenkins-demo:latest .
+         >docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
 
 
 
@@ -193,6 +195,21 @@ docker build -t jenkins-demo:latest .
 
 >Run Docker Container:
 docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
+
+#1.Stop all running containers:
+ >docker stop $(docker ps -q)
+#2.Remove all containers(both running and stopped):
+>docker rm $(docker ps -aq)
+#3. Do both in one step:
+>docker rm -f $(docker ps -aq)
+#4. Remove all unused Docker data(careful!):
+>docker system prune -a
+*This will remove:
+.All stopped containers
+.All unused images
+.All unused networks
+.All build cache
+! Be cautious -- this will also delete images and dangling volumes.
 
 #3.Rebuild and Restart the App:
 -------------------------------
