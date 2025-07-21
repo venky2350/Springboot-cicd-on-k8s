@@ -152,6 +152,15 @@ Springboot-cicd-on-k8s
          > java -jar target/jenkins-demo-1.0.0.jar
          >docker build -t jenkins-demo:latest .
          >docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
+#Successfully run an application on browser:
+![alt text](image-1.png)
+
+#Push this image to DockerHub:
+>docker tag jenkins-demo:latest your-dockerhub-username/jenkins-demo:latest
+docker push your-dockerhub-username/jenkins-demo:latest
+
+
+
 
 
 
