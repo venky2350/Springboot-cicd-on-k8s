@@ -194,3 +194,14 @@ docker build -t jenkins-demo:latest .
 >Run Docker Container:
 docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
 
+#3.Rebuild and Restart the App:
+-------------------------------
+>root@ip-172-31-95-129:~/Springboot-cicd-on-k8s/app#
+
+>mvn clean package
+docker build -t jenkins-demo:latest .
+docker stop springboot-app
+docker rm springboot-app
+docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
+>Check Browser Again
+http://<your-ec2-ip>:8080
