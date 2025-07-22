@@ -87,9 +87,7 @@ Springboot-cicd-on-k8s
 
 ### ASCII Art Version (For Quick Overview):
 -------------------------------------------
-
-```bash 
-
+```
 
 +-------------------------------------------------------+
 |       CONTINUOUS DELIVERY (JENKINS + HELM + ARGOCD)   |
@@ -116,6 +114,8 @@ Springboot-cicd-on-k8s
 |  │ (app:8080)      │ Ingress│ (admin/reports) │       |
 |  └─────────────────┘        └─────────────────┘       |
 +-------------------------------------------------------+
+
+
 ## TECH STACK:
    -----------
 ```bash  
@@ -136,9 +136,8 @@ Springboot-cicd-on-k8s
 │                                                                           |
 └───────────────────────────────────────────────────────────────────────----┘
 
-##Run an application on browser in local environment:
-------------------------------------------------------
-
+# Run an application on browser in local environment:
+  ----------------------------------------------------
 ```bash
 
 *Create an ec2 instance in AWS cloud
@@ -169,12 +168,9 @@ Springboot-cicd-on-k8s
 docker push your-dockerhub-username/jenkins-demo:latest
 
 
-
-
-
-
-##Trouble Shooting:
+# Trouble Shooting:
 -------------------
+
 #1)system has a conflicting Java environment:
 
 🔍 Summary of current issue:
@@ -254,7 +250,7 @@ http://<your-ec2-ip>:8080
 
 docker ps
 
-# If it's running, check inside the   container:
+# If it's running, check inside the container:
 docker exec -it <jenkins-container-id> /bin/bash
 
 cat /var/jenkins_home/secrets/initialAdminPassword
@@ -265,17 +261,7 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 
 
-
-
-
-
-
-
-
-
-
-
-#Implementation steps for Springboot-cicd-on-k8s:
+# Implementation steps for Springboot-cicd-on-k8s:
 -------------------------------------------------
 
 ```
@@ -289,7 +275,7 @@ sudo apt install git docker.io docker-compose openjdk-17-jdk maven unzip curl -y
 sudo usermod -aG docker $USER && newgrp docker
 
 # Step 2: Clone Spring Boot App From GitHub
-```bash
+
 git clone https://github.com/your-username/Springboot-cicd-on-k8s.git
 cd Springboot-cicd-on-k8s/app
 
