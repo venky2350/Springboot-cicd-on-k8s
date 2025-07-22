@@ -85,8 +85,11 @@ Springboot-cicd-on-k8s
 ├── .gitignore                      ← Ignore target/, logs, reports, secrets
 
 
-## ASCII Art Version (For Quick Overview):
+### ASCII Art Version (For Quick Overview):
 -------------------------------------------
+
+```bash 
+
 
 +-------------------------------------------------------+
 |       CONTINUOUS DELIVERY (JENKINS + HELM + ARGOCD)   |
@@ -115,6 +118,9 @@ Springboot-cicd-on-k8s
 +-------------------------------------------------------+
 ## TECH STACK:
    -----------
+```bash  
+
+
 ┌───────────────────────────────────────────────────────────────────────----┐ 
 │                           TECH STACK                                      │
 ├───────────────────┬───────────────────┬───────────────────┬────────────---┤
@@ -132,6 +138,9 @@ Springboot-cicd-on-k8s
 
 ##Run an application on browser in local environment:
 ------------------------------------------------------
+
+```bash
+
 *Create an ec2 instance in AWS cloud
        >name   : Springboot-cicd-on-k8s
        >os     : ubuntu
@@ -188,7 +197,9 @@ javac 17.0.x
  Then retry:
 
  mvn clean package
+
 #2)app(Dockerfile):
+
 >vi Springboot-cicd-on-k8s/app/Dockerfile
 
 FROM openjdk:17-jdk-alpine
@@ -266,10 +277,12 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 #Implementation steps for Springboot-cicd-on-k8s:
 -------------------------------------------------
-# Step 1: Prepare the Environment
-.Launch an AWS EC2 Ubuntu 24.04 instance
 
-.Update & install dependencies:
+```
+# Step 1: Prepare the Environment
+>Launch an AWS EC2 Ubuntu 24.04 instance
+
+>Update & install dependencies:
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install git docker.io docker-compose openjdk-17-jdk maven unzip curl -y
