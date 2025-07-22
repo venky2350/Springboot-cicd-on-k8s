@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-service
+  name: springboot-service
+  namespace: dev  # 👈 Optional, but recommended for consistency
 spec:
   selector:
-    app: hello
+    app: springboot-app  # 👈 Must match Deployment label
   ports:
   - port: 80
     targetPort: 8080

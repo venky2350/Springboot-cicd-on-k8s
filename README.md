@@ -166,7 +166,7 @@ docker push your-dockerhub-username/jenkins-demo:latest
 
 ##Trouble Shooting:
 -------------------
-#1) Thanks for sharing. Your system has a conflicting Java environment:
+#1)system has a conflicting Java environment:
 
 🔍 Summary of current issue:
 java is pointing to OpenJDK 21
@@ -231,3 +231,127 @@ docker rm springboot-app
 docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
 >Check Browser Again
 http://<your-ec2-ip>:8080
+
+#4) File structure mismatch:
+> We can see our folder or file structure install tree like the below:
+ apt install tree
+
+#5) Jenkins Install & Configure:
+*root@ip-172-31-92-91:~/Springboot-cicd-on-k8s/app# cat /var/jenkins_home/secrets/initialAdminPassword 
+
+*cat: /var/jenkins_home/secrets/initialAdminPassword: No such file or directory
+
+docker ps
+
+# If it's running, check inside the   container:
+docker exec -it <jenkins-container-id> /bin/bash
+
+cat /var/jenkins_home/secrets/initialAdminPassword
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Implementation steps for Springboot-cicd-on-k8s:
+-------------------------------------------------
+# Step 1: Prepare the Environment
+.Launch an AWS EC2 Ubuntu 24.04 instance
+
+.Update & install dependencies:
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install git docker.io docker-compose openjdk-17-jdk maven unzip curl -y
+sudo usermod -aG docker $USER && newgrp docker
+
+# Step 2: Clone Spring Boot App From GitHub
+```bash
+git clone https://github.com/your-username/Springboot-cicd-on-k8s.git
+cd Springboot-cicd-on-k8s/app
+
+#Step 3: Build the App JAR
+
+mvn clean package
+java -jar target/jenkins-demo-1.0.0.jar
+#Step 4:Create Docker Image
+>Dockerfile
+FROM openjdk:17-jdk-alpine
+VOLUME /tmp
+ARG JAR_FILE=target/jenkins-demo-1.0.0.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+EXPOSE 8080
+
+>Build Docker Image:
+docker build -t jenkins-demo:latest .
+docker run -d -p 8080:8080 --name springboot-app jenkins-demo:latest
+
+Test in browser:
+http://<EC2-IP>:8080
+
+#Step 5: Install & Configure Jenkins
+
+docker run -d -p 8081:8080 -p 50000:50000 --name jenkins \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  jenkins/jenkins:lts
+
+
+
+*Setup Jenkins from http://<EC2-IP>:8081
+
+* Install plugins: Git, Docker, Maven, BlueOcean, Kubernetes, etc.
+
+* Add GitHub credentials, DockerHub credentials.
+
+# Minimum Required Plugins Summary:
+Here is the minimum plugin list for your project:
+
+✅ Must-Have Plugins  
+git server *
+github *
+Docker  *
+Docker Pipeline *
+Docker Commons *
+maven integration-plugin *
+SonarQube Scanner *
+Sonar Quality Gates *
+Kubernetes CLI *
+Kubernetes Credentials *
+ssh-agent *
+ansicolor *
+timestamper *
+envinject *
+
+>Stop and Start Jenkins like this,
+docker stop jenkins
+docker start jenkins
+
+>After restart
+>Wait for Jenkins to come back up (may take 10–60 seconds).
+
+>Recheck with:
+
+docker logs -f jenkins    # for Docker
+
+
+
+
+
+
+
+>>> We are moving to Argo CD part, so we can follow the below URL links as per our requirement, Choose carefully our requirement is  Ubuntu (24.04 LTS) or Ubuntu (22.04 LTS),
+   1. https://www.fosstechnix.com/install-argocd-on-minikube-with-ubuntu-24-04/
+                             (or)
+   2. https://www.fosstechnix.com/how-to-install-argocd-on-minikube/

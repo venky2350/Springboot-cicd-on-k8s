@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-app
+  name: springboot-app
+  namespace: dev  # 👈 Added this line
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hello
+      app: springboot-app
   template:
     metadata:
       labels:
-        app: hello
+        app: springboot-app
     spec:
       containers:
-      - name: hello-app
-        image: YOUR_DOCKERHUB_USERNAME/hello-jenkins:latest
+      - name: springboot-app
+        image: venkatesh384/springboot-cicd-on-k8s:latest
         ports:
         - containerPort: 8080
