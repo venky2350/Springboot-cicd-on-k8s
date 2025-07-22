@@ -87,7 +87,7 @@ Springboot-cicd-on-k8s
 
 ### ASCII Art Version (For Quick Overview):
 -------------------------------------------
-```
+```bash
 
 +-------------------------------------------------------+
 |       CONTINUOUS DELIVERY (JENKINS + HELM + ARGOCD)   |
