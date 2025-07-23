@@ -56,10 +56,7 @@ pipeline {
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
               echo "🐳 Building Docker image..."
-              docker build -t jenkins-demo:latest .
-
-              echo "🏷️ Tagging image with DockerHub repo..."
-              docker tag jenkins-demo:latest $DOCKER_IMAGE:latest
+              docker build -t $DOCKER_IMAGE:latest .
 
               echo "📤 Pushing Docker image to Docker Hub..."
               docker push $DOCKER_IMAGE:latest
