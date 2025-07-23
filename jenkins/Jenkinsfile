@@ -2,24 +2,24 @@ pipeline {
   agent any
 
   tools {
-    maven 'Maven 3.9.6' // Must match Jenkins Global Tool name
-    jdk 'JDK 17'        // Must match Jenkins Global JDK name
+    maven 'Maven 3.9.6' // Jenkins Global Tool name
+    jdk 'JDK 17'        // Jenkins Global JDK name
   }
 
   environment {
-    SONARQUBE = 'SonarQube'                        // Jenkins SonarQube server name
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'     // Correct DockerHub image
+    SONARQUBE = 'SonarQube'                          // Jenkins SonarQube server name
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'       // DockerHub image
   }
 
   stages {
 
-    stage('Checkout') {
+    stage('📥 Checkout') {
       steps {
         git 'https://github.com/venky2350/Springboot-cicd-on-k8s.git'
       }
     }
 
-    stage('Build') {
+    stage('🔨 Maven Build') {
       steps {
         dir('app') {
           sh 'mvn clean package'
@@ -27,7 +27,7 @@ pipeline {
       }
     }
 
-    stage('SonarQube Analysis') {
+    stage('🔎 SonarQube Analysis') {
       steps {
         dir('app') {
           withSonarQubeEnv("${SONARQUBE}") {
@@ -43,7 +43,7 @@ pipeline {
       }
     }
 
-    stage('Docker Build & Push') {
+    stage('🐳 Docker Build & Push') {
       steps {
         dir('app') {
           withCredentials([usernamePassword(
@@ -58,41 +58,55 @@ pipeline {
               echo "🐳 Building Docker image..."
               docker build -t jenkins-demo:latest .
 
+              echo "🏷️ Tagging image with DockerHub repo..."
+              docker tag jenkins-demo:latest $DOCKER_IMAGE:latest
+
               echo "📤 Pushing Docker image to Docker Hub..."
-              docker push jenkins-demo:latest
+              docker push $DOCKER_IMAGE:latest
             '''
           }
         }
       }
     }
 
-    stage('Trivy Security Scan') {
+    stage('🔐 Trivy Security Scan') {
       steps {
         dir('trivy') {
-          sh './scan-trivy.sh'
+          sh '''
+            if command -v trivy >/dev/null 2>&1; then
+              ./scan-trivy.sh
+            else
+              echo "❌ Trivy is not installed on this agent."
+            fi
+          '''
         }
       }
     }
 
-    stage('Copy Reports') {
+    stage('📄 Copy Reports') {
       steps {
         sh '''
           mkdir -p reports
-          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "No Trivy report"
-          cp sonar-report.html reports/sonar-report.html || echo "No Sonar report"
+          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy report found."
+          cp sonar-report.html reports/sonar-report.html || echo "⚠️ No Sonar report found."
         '''
       }
     }
 
-    stage('Deploy to Kubernetes') {
+    stage('🚀 Deploy to Kubernetes') {
       steps {
         dir('manifests') {
           sh '''
+            echo "🔧 Applying Kubernetes manifests..."
             kubectl apply -f namespace.yaml
             kubectl apply -f deployment.yaml
             kubectl apply -f service.yaml
             kubectl apply -f ingress.yaml
+
+            echo "⏳ Waiting for rollout to complete..."
             kubectl rollout status deployment/jenkins-demo -n jenkins-demo
+
+            echo "📊 Fetching deployed resources..."
             kubectl get all -n jenkins-demo
           '''
         }
@@ -102,6 +116,7 @@ pipeline {
 
   post {
     always {
+      echo "🧹 Cleaning workspace..."
       cleanWs()
     }
   }
