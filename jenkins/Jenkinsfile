@@ -2,17 +2,16 @@ pipeline {
   agent any
 
   tools {
-    maven 'Maven 3.9.6' // Jenkins Global Tool name
-    jdk 'JDK 17'        // Jenkins Global JDK name
+    maven 'Maven 3.9.6'
+    jdk 'JDK 17'
   }
 
   environment {
-    SONARQUBE = 'SonarQube'                          // Jenkins SonarQube server name
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'       // ✅ Correct DockerHub repo
+    SONARQUBE = 'SonarQube'
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'  // ✅ DockerHub username used
   }
 
   stages {
-
     stage('📥 Checkout') {
       steps {
         git 'https://github.com/venky2350/Springboot-cicd-on-k8s.git'
@@ -35,6 +34,7 @@ pipeline {
               mvn clean verify sonar:sonar \
                 -Dsonar.projectKey=Springboot-cicd-on-k8s \
                 -Dsonar.projectName='Springboot-cicd-on-k8s' \
+                -Dsonar.host.url=http://34.237.245.195:9000 \
                 -Dsonar.token=sqp_65ae222ee47ec2eff769e56c3bcb39163b1cf93d
             '''
           }
@@ -42,28 +42,28 @@ pipeline {
       }
     }
 
-   stage('🐳 Docker Build & Push') {
-  steps {
-    withCredentials([usernamePassword(
-      credentialsId: 'dockerhub-creds',
-      usernameVariable: 'DOCKER_USERNAME',
-      passwordVariable: 'DOCKER_PASSWORD'
-    )]) {
-      dir('app') {
-        sh '''
-          echo "🔐 Logging in to Docker Hub..."
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    stage('🐳 Docker Build & Push') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-creds',
+          usernameVariable: 'DOCKER_USERNAME',
+          passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+          dir('app') {
+            sh '''
+              echo "🔐 Logging in to Docker Hub..."
+              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-          echo "🐳 Building Docker image..."
-          docker build -t $DOCKER_IMAGE:latest .
+              echo "🐳 Building Docker image..."
+              docker build -t $DOCKER_IMAGE:latest .
 
-          echo "📤 Pushing Docker image to Docker Hub..."
-          docker push $DOCKER_IMAGE:latest
-        '''
+              echo "📤 Pushing Docker image to Docker Hub..."
+              docker push $DOCKER_IMAGE:latest
+            '''
+          }
+        }
       }
     }
-  }
-}
 
     stage('🔐 Trivy Security Scan') {
       steps {
@@ -83,8 +83,8 @@ pipeline {
       steps {
         sh '''
           mkdir -p reports
-          cp trivy/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy report found."
-          cp app/target/site/sonar/sonar-report.html reports/sonar-report.html || echo "⚠️ No Sonar report found."
+          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy report found."
+          cp sonar-report.html reports/sonar-report.html || echo "⚠️ No Sonar report found."
         '''
       }
     }
