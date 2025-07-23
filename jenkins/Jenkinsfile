@@ -2,13 +2,13 @@ pipeline {
   agent any
 
   tools {
-    maven 'Maven 3.9.6'      // Must match Jenkins Global Tool name
-    jdk 'JDK 17'             // Must match Jenkins Global JDK name
+    maven 'Maven 3.9.6' // Must match Jenkins Global Tool name
+    jdk 'JDK 17'        // Must match Jenkins Global JDK name
   }
 
   environment {
-    SONARQUBE = 'SonarQube'                          // Jenkins SonarQube server name
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'       // DockerHub image name
+    SONARQUBE = 'SonarQube'                        // Jenkins SonarQube server name
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'     // DockerHub image name
   }
 
   stages {
@@ -45,28 +45,32 @@ pipeline {
 
     stage('Docker Build & Push') {
       steps {
-        withCredentials([usernamePassword(
-          credentialsId: 'dockerhub-creds',
-          usernameVariable: 'DOCKER_USERNAME',
-          passwordVariable: 'DOCKER_PASSWORD')]) {
-            
-          sh '''
-            echo "🔐 Logging in to Docker Hub..."
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        dir('app') {
+          withCredentials([usernamePassword(
+            credentialsId: 'dockerhub-creds',
+            usernameVariable: 'DOCKER_USERNAME',
+            passwordVariable: 'DOCKER_PASSWORD'
+          )]) {
+            sh '''
+              echo "🔐 Logging in to Docker Hub..."
+              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-            echo "🐳 Building Docker image..."
-            docker build -t $DOCKER_IMAGE:latest .
+              echo "🐳 Building Docker image..."
+              docker build -t $DOCKER_IMAGE:latest .
 
-            echo "📤 Pushing Docker image to Docker Hub..."
-            docker push $DOCKER_IMAGE:latest
-          '''
+              echo "📤 Pushing Docker image to Docker Hub..."
+              docker push $DOCKER_IMAGE:latest
+            '''
+          }
         }
       }
     }
 
     stage('Trivy Security Scan') {
       steps {
-        sh './scan-trivy.sh'
+        dir('trivy') {
+          sh './scan-trivy.sh'
+        }
       }
     }
 
@@ -82,17 +86,18 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh '''
-          kubectl apply -f manifests/namespace.yaml
-          kubectl apply -f manifests/deployment.yaml
-          kubectl apply -f manifests/service.yaml
-          kubectl apply -f manifests/ingress.yaml
-          kubectl rollout status deployment/jenkins-demo -n jenkins-demo
-          kubectl get all -n jenkins-demo
-        '''
+        dir('manifests') {
+          sh '''
+            kubectl apply -f namespace.yaml
+            kubectl apply -f deployment.yaml
+            kubectl apply -f service.yaml
+            kubectl apply -f ingress.yaml
+            kubectl rollout status deployment/jenkins-demo -n jenkins-demo
+            kubectl get all -n jenkins-demo
+          '''
+        }
       }
     }
-
   }
 
   post {
