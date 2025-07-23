@@ -306,6 +306,10 @@ docker run -d -p 8081:8080 -p 50000:50000 --name jenkins \
   -v /var/run/docker.sock:/var/run/docker.sock \
   jenkins/jenkins:lts
 
+docker exec -it <jenkins-container-id> /bin/bash
+
+cat /var/jenkins_home/secrets/initialAdminPassword
+
 
 
 *Setup Jenkins from http://<EC2-IP>:8081
