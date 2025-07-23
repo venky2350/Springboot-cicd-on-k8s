@@ -27,7 +27,11 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv("${SONARQUBE}") {
-          sh 'mvn sonar:sonar'
+          sh 'mvn clean verify sonar:sonar \
+  -Dsonar.projectKey=Springboot-cicd-on-k8s \
+  -Dsonar.projectName='Springboot-cicd-on-k8s' \
+  -Dsonar.host.url=http://34.237.245.195:9000 \
+  -Dsonar.token=sqp_e6ddeded2ab9bbb7f47e69c078c49c8f2ef8dfd0'
         }
       }
     }
