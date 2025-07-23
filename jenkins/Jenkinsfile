@@ -8,7 +8,7 @@ pipeline {
 
   environment {
     SONARQUBE = 'SonarQube'                        // Jenkins SonarQube server name
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'     // DockerHub image name
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'     // Correct DockerHub image
   }
 
   stages {
@@ -56,10 +56,10 @@ pipeline {
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
               echo "🐳 Building Docker image..."
-              docker build -t jenkins-demo:latest .
+              docker build -t $DOCKER_IMAGE:latest .
 
               echo "📤 Pushing Docker image to Docker Hub..."
-              docker push jenkins-demo:latest
+              docker push $DOCKER_IMAGE:latest
             '''
           }
         }
