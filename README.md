@@ -270,7 +270,7 @@ jenkins:
 
  *Solution: Install Docker CLI inside Jenkins container
 ## step 1
-docker exec -it jenkins bash
+docker exec -it --user root jenkins bash
 #Step 2: Install Docker CLI (for Debian-based Jenkins image)
 
 #3. jenkins/Dockerfile
