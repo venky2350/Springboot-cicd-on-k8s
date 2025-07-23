@@ -306,6 +306,12 @@ docker run -d -p 8081:8080 -p 50000:50000 --name jenkins \
   -v /var/run/docker.sock:/var/run/docker.sock \
   jenkins/jenkins:lts
 
+NOTE! : To free up port 8080, just kill that process:
+> sudo kill -9 2453
+Then verify it’s freed:
+>sudo lsof -i :8080
+
+
 docker exec -it <jenkins-container-id> /bin/bash
 
 cat /var/jenkins_home/secrets/initialAdminPassword
