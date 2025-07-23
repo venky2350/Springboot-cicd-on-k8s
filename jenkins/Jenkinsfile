@@ -2,13 +2,13 @@ pipeline {
   agent any
 
   tools {
-    maven 'Maven 3.9.6'    // Ensure this name matches Jenkins Global Tool Configuration
-    jdk 'JDK 17'           // Also must match Jenkins JDK configuration
+    maven 'Maven 3.9.6'    // Ensure this matches Jenkins global config
+    jdk 'JDK 17'
   }
 
   environment {
-    SONARQUBE = 'SonarQube' // Must match the SonarQube instance name configured in Jenkins
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo' // DockerHub image name
+    SONARQUBE = 'SonarQube'
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
   }
 
   stages {
@@ -20,20 +20,27 @@ pipeline {
 
     stage('Build') {
       steps {
-        sh 'mvn clean package'
+        dir('app') {
+          sh 'mvn clean package'
+        }
       }
     }
 
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv("${SONARQUBE}") {
-          sh """
-            mvn verify sonar:sonar \
-              -Dsonar.projectKey=Springboot-cicd-on-k8s \
-              -Dsonar.projectName=Springboot-cicd-on-k8s \
-              -Dsonar.host.url=http://34.237.245.195:9000 \
-              -Dsonar.token=sqp_e6ddeded2ab9bbb7f47e69c078c49c8f2ef8dfd0
-          """
+        dir('sonar') {
+          withSonarQubeEnv("${SONARQUBE}") {
+            sh '''
+              mvn verify sonar:sonar \
+                -Dsonar.projectKey=Springboot-cicd-on-k8s \
+                -Dsonar.projectName="Springboot CI/CD App" \
+                -Dsonar.sources=./src \
+                -Dsonar.java.binaries=./target \
+                -Dsonar.sourceEncoding=UTF-8 \
+                -Dsonar.host.url=http://34.237.245.195:9000 \
+                -Dsonar.token=sqp_e6ddeded2ab9bbb7f47e69c078c49c8f2ef8dfd0
+            '''
+          }
         }
       }
     }
@@ -45,11 +52,11 @@ pipeline {
           usernameVariable: 'DOCKER_USERNAME',
           passwordVariable: 'DOCKER_PASSWORD')]) {
 
-          sh """
+          sh '''
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            docker build -t jenkins-demo:latest .
-            docker push jenkins-demo:latest
-          """
+            docker build -t $DOCKER_IMAGE:latest .
+            docker push $DOCKER_IMAGE:latest
+          '''
         }
       }
     }
