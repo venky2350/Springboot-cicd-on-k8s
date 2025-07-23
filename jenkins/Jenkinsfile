@@ -52,7 +52,7 @@ pipeline {
           dir('app') {
             sh '''
               echo "🔐 Logging in to Docker Hub..."
-              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+              echo dckr_pat_CPh3E_JMdIAPnGfxa8TMGpMoNxc | docker login -u venkatesh384 --password-stdin
 
               echo "🐳 Building Docker image..."
               docker build -t $DOCKER_IMAGE:latest .
