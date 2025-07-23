@@ -8,7 +8,7 @@ pipeline {
 
   environment {
     SONARQUBE = 'SonarQube'                          // Jenkins SonarQube server name
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'       // DockerHub image
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'       // DockerHub image (correct repo)
   }
 
   stages {
