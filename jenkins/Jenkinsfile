@@ -2,16 +2,17 @@ pipeline {
   agent any
 
   tools {
-    maven 'Maven 3.9.6'    // Must match Jenkins Global Tool name
-    jdk 'JDK 17'           // Must match Jenkins Global JDK name
+    maven 'Maven 3.9.6'      // Must match Jenkins Global Tool name
+    jdk 'JDK 17'             // Must match Jenkins Global JDK name
   }
 
   environment {
-    SONARQUBE = 'SonarQube' // Jenkins SonarQube server name
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo' // DockerHub image
+    SONARQUBE = 'SonarQube'                          // Jenkins SonarQube server name
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'       // DockerHub image name
   }
 
   stages {
+
     stage('Checkout') {
       steps {
         git 'https://github.com/venky2350/Springboot-cicd-on-k8s.git'
@@ -32,10 +33,10 @@ pipeline {
           withSonarQubeEnv("${SONARQUBE}") {
             sh '''
               mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=Springboot-cicd-on-k8s \
-  -Dsonar.projectName='Springboot-cicd-on-k8s' \
-  -Dsonar.host.url=http://34.237.245.195:9000 \
-  -Dsonar.token=sqp_65ae222ee47ec2eff769e56c3bcb39163b1cf93d
+                -Dsonar.projectKey=Springboot-cicd-on-k8s \
+                -Dsonar.projectName='Springboot-cicd-on-k8s' \
+                -Dsonar.host.url=http://34.237.245.195:9000 \
+                -Dsonar.token=sqp_65ae222ee47ec2eff769e56c3bcb39163b1cf93d
             '''
           }
         }
@@ -48,11 +49,16 @@ pipeline {
           credentialsId: 'dockerhub-creds',
           usernameVariable: 'DOCKER_USERNAME',
           passwordVariable: 'DOCKER_PASSWORD')]) {
-          
+            
           sh '''
-            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            docker build -t venkatesh384/jenkins-demo:latest .
-            docker push venkatesh384/jenkins-demo:latest
+            echo "🔐 Logging in to Docker Hub..."
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+            echo "🐳 Building Docker image..."
+            docker build -t $DOCKER_IMAGE:latest .
+
+            echo "📤 Pushing Docker image to Docker Hub..."
+            docker push $DOCKER_IMAGE:latest
           '''
         }
       }
@@ -86,6 +92,7 @@ pipeline {
         '''
       }
     }
+
   }
 
   post {
