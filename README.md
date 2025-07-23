@@ -255,9 +255,88 @@ docker exec -it <jenkins-container-id> /bin/bash
 
 cat /var/jenkins_home/secrets/initialAdminPassword
 
+#6)/var/jenkins_home/workspace/Springboot-cicd-on-k8s/app@tmp/durable-778aabc3/script.sh.copy: 3: docker: not found
+script returned exit code 127
+# means that Jenkins cannot find the docker command inside the Jenkins container.
+# Why It Happened:
+#You're using Jenkins inside Docker (based on your previous docker-compose.yml):
+jenkins:
+  image: jenkins/jenkins:lts
+  user: root
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock  # 👈 This is good
+
+#But even with the Docker socket mounted, the Jenkins container still needs the Docker CLI installed inside it to run Docker commands.
+
+ *Solution: Install Docker CLI inside Jenkins container
+## step 1
+docker exec -it jenkins bash
+#Step 2: Install Docker CLI (for Debian-based Jenkins image)
+
+#3. jenkins/Dockerfile
+FROM jenkins/jenkins:lts
+
+USER root
+
+RUN apt-get update && apt-get install -y docker.io
+
+# Optional: clean up to reduce image size
+RUN apt-get clean
+
+USER jenkins
+
+
+#docker-compose.yml
+version: '3.8'
+
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    user: root
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  springboot-app:
+    image: venkatesh384/jenkins-demo:latest
+    container_name: jenkins-demo
+    ports:
+      - "8080:8080"
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+
+volumes:
+  jenkins_home:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
 
 
 
+apt-get update
+apt-get install -y docker.io
+
+docker --version
+
+#To run it:
+docker-compose up -d --build
+
+
+#🔁 Step 3: Retry the Jenkins job
 
 
 
