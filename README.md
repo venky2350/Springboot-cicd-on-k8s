@@ -339,6 +339,117 @@ docker-compose up -d --build
 #🔁 Step 3: Retry the Jenkins job
 
 
+## 7) 🐳 Docker Build & Push – Troubleshooting & Solution (Jenkins in Docker)
+
+### ⚠️ Common Issues Encountered
+
+#Issue: 🔐 DockerHub login failed  
+Error: `unauthorized: incorrect username or password`  
+Reason: Invalid DockerHub credentials  
+
+#Issue: 🧱 Image push blocked  
+Error: `unauthorized: access token has insufficient scopes`  
+Reason: Token doesn’t have push permission  
+
+#Issue: 📛 Container name conflict  
+Error: `The container name "/jenkins" is already in use`  
+Reason: Jenkins container already running  
+
+#Issue: 🚫 Docker socket error  
+Error: `permission denied while trying to connect to the Docker daemon socket`  
+#Reason: Jenkins doesn't have Docker access  
+
+#Issue: ❌ Docker not found  
+Error: `docker: not found`  
+Reason: Jenkins container doesn’t have Docker CLI installed
+
+# Run Jenkins with Docker socket and root user:
+
+docker run -d \
+  --name jenkins \
+  -u root \
+  -p 8081:8080 -p 50000:50000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v jenkins_home:/var/jenkins_home \
+  jenkins/jenkins:lts
+
+#🐳 Step 2: Install Docker CLI inside Jenkins Container
+
+docker exec -it jenkins bash
+apt-get update && apt-get install -y docker.io
+exit
+
+#🔐 Step 3: Add DockerHub Credentials in Jenkins
+
+Jenkins → Manage Jenkins → Credentials → Global → Add Credentials
+
+Type: Username with password
+
+ID: dockerhub-creds
+
+Username: venkatesh384
+
+Password: your-dockerhub-password
+
+Description: DockerHub Credentials
+
+#🚀 Step 4: Jenkinsfile Docker Build & Push Stage
+
+stage('🐳 Docker Build & Push') {
+  steps {
+    withCredentials([usernamePassword(
+      credentialsId: 'dockerhub-creds',
+      usernameVariable: 'DOCKER_USERNAME',
+      passwordVariable: 'DOCKER_PASSWORD'
+    )]) {
+      dir('app') {
+        sh '''
+          echo "🔐 Logging in to Docker Hub..."
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+          echo "🐳 Building Docker image..."
+          docker build -t $DOCKER_IMAGE:latest .
+
+          echo "📤 Pushing Docker image to Docker Hub..."
+          docker push $DOCKER_IMAGE:latest
+        '''
+      }
+    }
+  }
+}
+
+#🌐 Step 5: Jenkinsfile Environment Variable
+
+environment {
+  DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
+}
+
+
+
+
+
+
+
+
+
+
+### ✅ Final Working Solution
+
+This solution ensures Jenkins (running in Docker) can build and push Docker images to DockerHub.
+
+---
+
+🔧 Step 1: Recreate Jenkins Container with Docker Socket Mount
+
+Stop and remove existing container:
+
+```bash
+docker stop jenkins
+docker rm jenkins
+
+
+
+
 
 # Implementation steps for Springboot-cicd-on-k8s:
 -------------------------------------------------
@@ -489,4 +600,4 @@ docker run -d --name nginx nginx
 >>> We are moving to Argo CD part, so we can follow the below URL links as per our requirement, Choose carefully our requirement is  Ubuntu (24.04 LTS) or Ubuntu (22.04 LTS),
    1. https://www.fosstechnix.com/install-argocd-on-minikube-with-ubuntu-24-04/
                              (or)
-   2. https://www.fosstechnix.com/how-to-install-argocd-on-minikube/
+   2. https://www.fosstechnix.com/how-to-insta
