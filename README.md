@@ -344,6 +344,50 @@ docker start jenkins
 
 docker logs -f jenkins    # for Docker
 
+# Method 1: Using docker-compose (Recommended for Projects)
+------------------------------------------------------------
+> Create a docker-compose.yml file and define all your containers there.
+Note! : Creating a docker-compose.yml file for project *
+> Start all containers at a time
+* docker-compose up -d
+
+> Restart all containers 
+* docker-compose restart
+
+> Stop all containers
+* docker-compose down
+
+# Method 2: Start multiple containers in one command
+------------------------------------------------------
+#If you're not using docker-compose, you can start them manually like this:
+* docker start jenkins sonarqube nginx
+>Start using container IDs
+* docker start dbc41e3ecd34 4d994742849c
+
+# Tip: o rename containers for easy use
+docker rename flamboyant_wright jenkins
+docker rename youthful_chatelet jenkins-demo
+
+
+
+
+
+#Method 3: Use Docker run for multiple new containers
+* docker run -d --name jenkins jenkins/jenkins:lts
+docker run -d --name sonarqube sonarqube
+docker run -d --name nginx nginx
+
+>Each -d makes it run in background.
+
+
+
+
+
+
+
+
+
+
 
 
 
