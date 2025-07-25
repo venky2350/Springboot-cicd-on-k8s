@@ -375,7 +375,8 @@ docker run -d \
 
 #🐳 Step 2: Install Docker CLI inside Jenkins Container
 
-docker exec -it jenkins bash
+docker exec -u 0 -it jenkins bash
+
 apt-get update && apt-get install -y docker.io
 exit
 
