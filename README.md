@@ -473,6 +473,9 @@ cd Springboot-cicd-on-k8s/app
 
 mvn clean package
 java -jar target/jenkins-demo-1.0.0.jar
+
+docker-compose build jenkins
+
 #Step 4:Create Docker Image
 >Dockerfile
 FROM openjdk:17-jdk-alpine
