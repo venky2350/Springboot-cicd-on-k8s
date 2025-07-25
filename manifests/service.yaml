@@ -4,10 +4,11 @@ metadata:
   name: springboot-service
   namespace: dev
 spec:
-  type: LoadBalancer   # ✅ Changed from NodePort
+  type: LoadBalancer
   selector:
     app: springboot-app
   ports:
-    - protocol: TCP
-      port: 8080
+    - port: 8080
       targetPort: 8080
+      protocol: TCP
+      name: http
