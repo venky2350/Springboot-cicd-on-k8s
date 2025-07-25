@@ -13,8 +13,8 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock  # 👈 Docker access
-      - ~/.kube/config:/root/.kube/config          # 👈 Mount kubeconfig for kubectl
-
+      - /home/ubuntu/.kube/config:/root/.kube/config
+      - /home/ubuntu/.minikube:/home/jenkins/.minikube  # ✅ Full path
   springboot-app:
     image: venkatesh384/jenkins-demo:latest
     container_name: jenkins-demo
