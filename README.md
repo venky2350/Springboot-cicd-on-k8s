@@ -476,6 +476,8 @@ java -jar target/jenkins-demo-1.0.0.jar
 
 docker-compose build jenkins
 
+docker-compose up -d
+
 #Step 4:Create Docker Image
 >Dockerfile
 FROM openjdk:17-jdk-alpine
