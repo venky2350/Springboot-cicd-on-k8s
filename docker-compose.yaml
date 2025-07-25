@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   jenkins:
-    build: ./jenkins     # 👈 Uses custom Dockerfile to install Docker CLI
+    build:
+      context: ./jenkins     # 👈 Uses custom Dockerfile to install kubectl + Docker CLI
+      dockerfile: Dockerfile
     container_name: jenkins
     user: root
     ports:
@@ -11,7 +13,8 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock  # 👈 Docker access
-      -  ~/.kube/config:/root/.kube/config
+      - ~/.kube/config:/root/.kube/config          # 👈 Mount kubeconfig for kubectl
+
   springboot-app:
     image: venkatesh384/jenkins-demo:latest
     container_name: jenkins-demo
