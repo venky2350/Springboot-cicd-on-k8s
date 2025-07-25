@@ -9,9 +9,11 @@ pipeline {
   environment {
     SONARQUBE = 'SonarQube'
     DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
+    IMAGE_TAG = "${BUILD_NUMBER}"
   }
 
   stages {
+
     stage('📥 Checkout') {
       steps {
         git 'https://github.com/venky2350/Springboot-cicd-on-k8s.git'
@@ -32,11 +34,12 @@ pipeline {
           withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
               sh '''
+                set -e
                 mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=Springboot-cicd-on-k8s \
-  -Dsonar.projectName='Springboot-cicd-on-k8s' \
-  -Dsonar.host.url=http://54.165.159.175:9000 \
-  -Dsonar.token=$SONAR_TOKEN
+                  -Dsonar.projectKey=Springboot-cicd-on-k8s \
+                  -Dsonar.projectName='Springboot-cicd-on-k8s' \
+                  -Dsonar.host.url=http://54.165.159.175:9000 \
+                  -Dsonar.token=$SONAR_TOKEN
               '''
             }
           }
@@ -53,14 +56,15 @@ pipeline {
         )]) {
           dir('app') {
             sh '''
+              set -e
               echo "🔐 Logging in to Docker Hub..."
-              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
               echo "🐳 Building Docker image..."
-              docker build -t $DOCKER_IMAGE:latest .
+              docker build -t $DOCKER_IMAGE:$IMAGE_TAG .
 
               echo "📤 Pushing Docker image to Docker Hub..."
-              docker push $DOCKER_IMAGE:latest
+              docker push $DOCKER_IMAGE:$IMAGE_TAG
             '''
           }
         }
@@ -71,10 +75,12 @@ pipeline {
       steps {
         dir('trivy') {
           sh '''
+            set -e
             if command -v trivy >/dev/null 2>&1; then
+              echo "🔎 Running Trivy security scan..."
               ./scan-trivy.sh
             else
-              echo "❌ Trivy is not installed on this agent."
+              echo "⚠️ Trivy not found – skipping image scan. Install it inside Jenkins container."
             fi
           '''
         }
@@ -95,6 +101,7 @@ pipeline {
       steps {
         dir('manifests') {
           sh '''
+            set -e
             echo "🔧 Applying Kubernetes manifests..."
             kubectl apply -f namespace.yaml --validate=false
             kubectl apply -f deployment.yaml
