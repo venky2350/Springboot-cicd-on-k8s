@@ -8,11 +8,10 @@ pipeline {
 
   environment {
     SONARQUBE = 'SonarQube'
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo' // ✅ Your DockerHub image
+    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
   }
 
   stages {
-
     stage('📥 Checkout') {
       steps {
         git 'https://github.com/venky2350/Springboot-cicd-on-k8s.git'
@@ -37,7 +36,7 @@ pipeline {
   -Dsonar.projectKey=Springboot-cicd-on-k8s \
   -Dsonar.projectName='Springboot-cicd-on-k8s' \
   -Dsonar.host.url=http://54.165.159.175:9000 \
-  -Dsonar.token=sqp_3283cd9ff76b3e9585ab877ff3edf4dbed365dd7
+  -Dsonar.token=$SONAR_TOKEN
               '''
             }
           }
@@ -97,16 +96,15 @@ pipeline {
         dir('manifests') {
           sh '''
             echo "🔧 Applying Kubernetes manifests..."
-            kubectl apply -f namespace.yaml
+            kubectl apply -f namespace.yaml --validate=false
             kubectl apply -f deployment.yaml
             kubectl apply -f service.yaml
-            kubectl apply -f ingress.yaml
 
             echo "⏳ Waiting for rollout to complete..."
-            kubectl rollout status deployment/jenkins-demo -n jenkins-demo
+            kubectl rollout status deployment/springboot-app -n dev
 
             echo "📊 Fetching deployed resources..."
-            kubectl get all -n jenkins-demo
+            kubectl get all -n dev
           '''
         }
       }
