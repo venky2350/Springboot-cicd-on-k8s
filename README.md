@@ -531,8 +531,11 @@ Docker Commons *
 maven integration-plugin *
 SonarQube Scanner *
 Sonar Quality Gates *
+Kubernetes *
 Kubernetes CLI *
 Kubernetes Credentials *
+Kubernetes :: Pipeline :: DevOps StepsVersion
+1.6 *
 ssh-agent *
 ansicolor *
 timestamper *
