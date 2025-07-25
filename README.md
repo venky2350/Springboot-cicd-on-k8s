@@ -424,15 +424,6 @@ environment {
   DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
 }
 
-
-
-
-
-
-
-
-
-
 ### ✅ Final Working Solution
 
 This solution ensures Jenkins (running in Docker) can build and push Docker images to DockerHub.
@@ -446,6 +437,67 @@ Stop and remove existing container:
 ```bash
 docker stop jenkins
 docker rm jenkins
+
+
+#8)SonarQube Analysis
+> ERROR: Credentials 'sonarqube-token' is of type 'Username with password' where 'org.jenkinsci.plugins.plaincredentials.StringCredentials' was expected
+
+# Root Cause:
+Jenkins pipeline expects a "Secret text" credential(StringCredentials) for the SonarQube token, but currently you've configured it as "Username with password", which is invalid for withSonarQubeEnv.
+
+🔧 Solution (Fix in Jenkins UI):
+Go to Jenkins → Manage Jenkins → Credentials → (Your scope / folder)
+
+Delete the old credential:
+
+Find the credential with ID: sonarqube-token
+
+If it's of type "Username with password", delete it.
+
+Recreate it with correct type:
+
+Click "Add Credentials"
+
+Choose:
+
+Kind: Secret text
+
+Secret: (Paste your actual SonarQube token here)
+
+ID: sonarqube-token (this must match your pipeline)
+
+Description: SonarQube access token
+
+Save it.
+
+#📌 Optional Check:
+
+# Ensure the pom.xml includes the Sonar Scanner plugin configuration if you're using Maven:
+
+xml
+Copy code
+<plugin>
+  <groupId>org.sonarsource.scanner.maven</groupId>
+  <artifactId>sonar-maven-plugin</artifactId>
+  <version>3.8.7</version>
+</plugin>
+
+# And your Jenkins pipeline should include something like:
+
+groovy
+Copy code
+withSonarQubeEnv('SonarQube') {
+  withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+    sh 'mvn clean verify sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+  }
+}
+
+
+# 🔁 Retry Your Pipeline:
+Once the correct credential type is saved, re-run your Jenkins pipeline. It should now successfully inject the Sonar token and generate report-task.txt.
+
+
+
 
 
 
