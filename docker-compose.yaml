@@ -3,29 +3,28 @@ version: '3.8'
 services:
   jenkins:
     build:
-      context: ./jenkins     # 👈 Uses custom Dockerfile to install kubectl + Docker CLI
+      context: ./jenkins      # Uses custom Dockerfile with kubectl + Docker CLI
       dockerfile: Dockerfile
     container_name: jenkins
     user: root
-    ports:
-      - "8081:8080"       # Jenkins UI
-      - "50000:50000"     # Jenkins agent communication
+    network_mode: "host"      # ✅ Enables Jenkins to access Minikube API
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock  # 👈 Docker access
+      - /var/run/docker.sock:/var/run/docker.sock
       - /home/ubuntu/.kube/config:/root/.kube/config
-      - /home/ubuntu/.minikube:/home/jenkins/.minikube  # ✅ Full path
+      - /home/ubuntu/.minikube:/home/jenkins/.minikube
+
   springboot-app:
     image: venkatesh384/jenkins-demo:latest
     container_name: jenkins-demo
     ports:
-      - "8080:8080"       # App exposed on port 8080
+      - "8080:8080"
 
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
     ports:
-      - "9000:9000"       # SonarQube UI
+      - "9000:9000"
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
     volumes:
