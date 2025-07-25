@@ -91,16 +91,6 @@ pipeline {
       }
     }
 
-    stage('📦 Verify kubectl') {
-      steps {
-        sh '''
-          echo "🔍 Verifying kubectl installation..."
-          kubectl version --client || echo "❌ kubectl not found!"
-          kubectl config view || echo "⚠️ kubeconfig not loaded!"
-        '''
-      }
-    }
-
     stage('🚀 Deploy to Kubernetes') {
       steps {
         dir('manifests') {
