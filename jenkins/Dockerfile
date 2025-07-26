@@ -2,8 +2,11 @@ FROM jenkins/jenkins:lts
 
 USER root
 
+
 # Install basic packages
 RUN apt-get update && apt-get install -y \
+    git \
+    wget \
     curl \
     sudo \
     apt-transport-https \
