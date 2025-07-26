@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-app
-  namespace: dev  # 👈 Added this line
+  name: jenkins-demo
+  namespace: dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: springboot-app
+      app: jenkins-demo
   template:
     metadata:
       labels:
-        app: springboot-app
+        app: jenkins-demo
     spec:
       containers:
-      - name: springboot-app
-        image: venkatesh384/springboot-cicd-on-k8s:latest
-        ports:
-        - containerPort: 8080
+        - name: jenkins-demo
+          image: venkatesh384/jenkins-demo:latest
+          ports:
+            - containerPort: 8080
