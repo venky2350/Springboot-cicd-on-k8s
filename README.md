@@ -497,6 +497,102 @@ withSonarQubeEnv('SonarQube') {
 # 🔁 Retry Your Pipeline:
 Once the correct credential type is saved, re-run your Jenkins pipeline. It should now successfully inject the Sonar token and generate report-task.txt.
 
+#9) ubuntu@ip-172-31-32-253:~$ minikube version
+
+❌  Exiting due to HOST_HOME_PERMISSION: mkdir /home/ubuntu/.minikube/certs: permission denied        
+💡  Suggestion: Your user lacks perdirectory. Run: 'sudo chown -R $USER $HOME/.minikube; chmod -R u+wrx $HOME/.minikube' to fix
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/9165 
+
+# You're seeing this error because minikube doesn’t have the right permissions to create or write to its directory:
+/home/ubuntu/.minikube/certs
+
+✅ To fix this issue, just run the following command exactly as suggested:
+
+sudo chown -R $USER $HOME/.minikube && chmod -R u+wrx $HOME/.minikube
+
+minikube version
+
+ubuntu@ip-172-31-32-253:~$ minikube version
+minikube version: v1.36.0
+commit: f8f52f5de11fc6ad8244afac475e1d0f96841df1-dirty
+
+#10) ubuntu@ip-172-31-32-253:~$ minikube start --addons=ingress --cpus=2 --cni=flannel --install-addons=true --Kubernetes-version=stable --memory=6g
+Error: unknown flag: --Kubernetes-version
+See 'minikube start --help' for usage.
+
+ubuntu@ip-172-31-32-253:~$ minikube start --addons=ingress --cpus=2 --cni=flannel --install-addons=true --kubernetes-version=stable --memory=6g
+
+#11) # 🛠️ Minikube Startup Error: `~/.kube/config: is a directory`
+
+## ❌ Problem
+
+When running:
+
+```bash
+minikube start --addons=ingress --cpus=2 --cni=flannel --install-addons=true --kubernetes-version=stable --memory=6g
+```
+
+You may encounter the following error:
+
+```
+❌  Exiting due to GUEST_START: failed to start node: Failed kubeconfig update: read kubeconfig from "/home/ubuntu/.kube/config": read /home/ubuntu/.kube/config: is a directory
+```
+
+## 📌 Root Cause
+
+Minikube expects `~/.kube/config` to be a **file**, but it is incorrectly a **directory**.
+
+---
+
+## ✅ Step-by-Step Solution
+
+### 1. Delete the Incorrect Directory
+
+```bash
+sudo rm -rf ~/.kube/config
+```
+
+### 2. Fix `.kube` Directory Ownership (if needed)
+
+If `.kube` is owned by root and prevents you from writing to it:
+
+```bash
+sudo chown -R $USER:$USER ~/.kube
+```
+
+### 3. Create a New kubeconfig File
+
+```bash
+touch ~/.kube/config
+chmod 600 ~/.kube/config
+```
+
+This creates an empty file with correct permissions for Minikube.
+
+---
+
+## 🚀 Restart Minikube
+
+```bash
+minikube start --addons=ingress --cpus=2 --cni=flannel --install-addons=true --kubernetes-version=stable --memory=6g
+```
+
+---
+
+## 🧪 Verify
+
+Check Minikube status:
+
+```bash
+minikube status
+```
+
+Check if Ingress addon is enabled:
+
+```bash
+minikube addons list
+```
+
 
 
 
@@ -642,20 +738,6 @@ docker run -d --name nginx nginx
 
 > Manually run SonarQube in docker
 * docker run -d   --name sonarqube   -p 9000:9000   -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true   sonarqube:latest
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 >>> We are moving to Argo CD part, so we can follow the below URL links as per our requirement, Choose carefully our requirement is  Ubuntu (24.04 LTS) or Ubuntu (22.04 LTS),
