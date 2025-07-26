@@ -598,9 +598,7 @@ minikube addons list
 
 
 
-
-
-# Implementation steps for Springboot-cicd-on-k8s:
+## Implementation steps for Springboot-cicd-on-k8s:
 -------------------------------------------------
 
 ```
@@ -655,6 +653,7 @@ NOTE! : To free up port 8080, just kill that process:
 Then verify it’s freed:
 >sudo lsof -i :8080
 
+docker exec -u 0 -it jenkins bash
 
 docker exec -it <jenkins-container-id> /bin/bash
 

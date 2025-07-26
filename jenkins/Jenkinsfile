@@ -48,27 +48,27 @@ pipeline {
     }
 
     stage('🐳 Docker Build & Push') {
-  steps {
-    withCredentials([usernamePassword(
-      credentialsId: 'dockerhub-creds',
-      usernameVariable: 'DOCKER_USERNAME',
-      passwordVariable: 'DOCKER_PASSWORD'
-    )]) {
-      dir('app') {
-        sh '''
-          echo "🔐 Logging in to Docker Hub..."
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-creds',
+          usernameVariable: 'DOCKER_USERNAME',
+          passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+          dir('app') {
+            sh '''
+              echo "🔐 Logging in to Docker Hub..."
+              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-          echo "🐳 Building Docker image..."
-          docker build -t $DOCKER_IMAGE:latest .
+              echo "🐳 Building Docker image..."
+              docker build -t $DOCKER_IMAGE:latest .
 
-          echo "📤 Pushing Docker image to Docker Hub..."
-          docker push $DOCKER_IMAGE:latest
-        '''
+              echo "📤 Pushing Docker image to Docker Hub..."
+              docker push $DOCKER_IMAGE:latest
+            '''
+          }
+        }
       }
     }
-  }
-}
 
     stage('🔐 Trivy Security Scan') {
       steps {
@@ -97,6 +97,11 @@ pipeline {
     }
 
     stage('🚀 Deploy to Kubernetes') {
+      agent {
+        docker {
+          image 'bitnami/kubectl:latest'
+        }
+      }
       steps {
         dir('manifests') {
           sh '''

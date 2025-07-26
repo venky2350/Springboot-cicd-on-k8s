@@ -17,7 +17,7 @@ RUN curl -fsSL https://get.docker.com | sh
 # Install kubectl (latest stable)
 RUN curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x kubectl \
-    && mv kubectl /usr/local/bin/kubectl
+    && sudo mv kubectl /usr/local/bin/kubectl
 
 # Add Jenkins user to docker group
 RUN usermod -aG docker jenkins
