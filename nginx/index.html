@@ -3,17 +3,37 @@
 <head>
     <title>DevOps Admin Dashboard</title>
     <style>
-        body { font-family: Arial; background: #f4f4f4; text-align: center; padding: 40px; }
-        h1 { color: #333; }
-        a { display: block; margin: 15px; font-size: 20px; color: #0073e6; text-decoration: none; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        a {
+            display: block;
+            margin: 12px;
+            font-size: 18px;
+            color: #0073e6;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #005bb5;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <h1>🚀 DevOps Admin Dashboard</h1>
-    <a href="http://jenkins-url">Jenkins</a>
-    <a href="http://sonarqube-url">SonarQube</a>
-    <a href="http://grafana-url">Grafana</a>
-    <a href="/reports/trivy-report.txt">Trivy Report</a>
-    <a href="/reports/sonar-report.html">Sonar HTML Report</a>
+
+    <a href="http://<your-jenkins-ip>:8080" target="_blank">🔧 Jenkins</a>
+    <a href="http://<your-sonarqube-ip>:9000" target="_blank">📊 SonarQube</a>
+    <a href="http://<your-grafana-ip>:3000" target="_blank">📈 Grafana</a>
+
+    <a href="/reports/trivy-report.txt" target="_blank">🛡️ Trivy Report (TXT)</a>
+    <a href="/reports/sonar-report.html" target="_blank">📄 Sonar Report (HTML)</a>
 </body>
 </html>

@@ -1,28 +1,28 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "your-dockerhub-username/jenkins-demo:latest",
+  "ArtifactName": "venkatesh384/jenkins-demo:latest",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
-      "Family": "alpine",
-      "Name": "3.18"
+      "Family": "debian",
+      "Name": "bullseye"
     },
     "ImageID": "sha256:abc123def456",
     "RepoTags": [
-      "your-dockerhub-username/jenkins-demo:latest"
+      "venkatesh384/jenkins-demo:latest"
     ],
     "Size": 28135477
   },
   "Results": [
     {
-      "Target": "bin/bash (alpine 3.18)",
+      "Target": "bin/bash (debian 11)",
       "Type": "os",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2023-0464",
           "PkgName": "openssl",
-          "InstalledVersion": "1.1.1t-r0",
-          "FixedVersion": "1.1.1u-r0",
+          "InstalledVersion": "1.1.1n-0+deb11u3",
+          "FixedVersion": "1.1.1n-0+deb11u4",
           "Severity": "CRITICAL",
           "Title": "OpenSSL Out-of-bounds Read",
           "Description": "Out-of-bounds read in X.509 certificate verification...",

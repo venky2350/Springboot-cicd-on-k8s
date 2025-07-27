@@ -1,7 +1,8 @@
+# Step into the nginx directory
 cd nginx/
 
-# Build Docker image
-docker build -t your-dockerhub-username/nginx-reverse-proxy:latest .
+# Build the Nginx Docker image
+docker build -t venkatesh384/nginx-reverse-proxy:latest .
 
-# Push to Docker Hub
-docker push your-dockerhub-username/nginx-reverse-proxy:latest
+# Push the image to Docker Hub
+docker push venkatesh384/nginx-reverse-proxy:latest

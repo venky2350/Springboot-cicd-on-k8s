@@ -1,6 +1,7 @@
-cd Jenkins-Zero-To-Hero-Project/jenkins-demo-chart
-helm install jenkins-demo . --namespace devops --create-namespace
+cd Springboot-cicd-on-k8s/jenkins-demo-chart
+helm install jenkins-demo . --namespace dev --create-namespace
+
 
 Upgrade later:
 --------------
-helm upgrade jenkins-demo . -n devops
+helm upgrade jenkins-demo . -n dev

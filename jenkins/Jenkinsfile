@@ -10,6 +10,7 @@ pipeline {
     SONARQUBE = 'SonarQube'
     DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
     IMAGE_TAG = "${BUILD_NUMBER}"
+    NGINX_IMAGE = 'venkatesh384/nginx-reverse-proxy'
   }
 
   stages {
@@ -36,13 +37,34 @@ pipeline {
               sh '''
                 set -e
                 mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=Springboot-cicd-on-k8s \
-  -Dsonar.projectName='Springboot-cicd-on-k8s' \
-  -Dsonar.host.url=http://23.20.105.203:9000 \
-  -Dsonar.token=sqp_01f14e2ef5704ad682458e7204539f477ab72578
+                  -Dsonar.projectKey=Springboot-cicd-on-k8s \
+                  -Dsonar.projectName='Springboot-cicd-on-k8s' \
+                  -Dsonar.host.url=http://23.20.105.203:9000 \
+                  -Dsonar.token=$SONAR_TOKEN
               '''
             }
           }
+        }
+      }
+    }
+
+    stage('📄 Generate Sonar HTML Report') {
+      steps {
+        dir('nginx/reports') {
+          sh '''
+            echo "📥 Generating SonarQube HTML report..."
+
+            mkdir -p .
+            curl -s -u "sqp_01f14e2ef5704ad682458e7204539f477ab72578:" \
+              "http://23.20.105.203:9000/api/issues/search?componentKeys=Springboot-cicd-on-k8s&types=BUG,VULNERABILITY,CODE_SMELL" \
+              -o sonar-report.json
+
+            echo "<html><body><h2>Sonar Issues Report</h2><pre>" > sonar-report.html
+            cat sonar-report.json | jq '.' >> sonar-report.html
+            echo "</pre></body></html>" >> sonar-report.html
+
+            echo "✅ HTML report generated at nginx/reports/sonar-report.html"
+          '''
         }
       }
     }
@@ -73,15 +95,17 @@ pipeline {
     stage('🔐 Trivy Security Scan') {
       steps {
         dir('trivy') {
-          sh '''
-            set -e
-            if command -v trivy >/dev/null 2>&1; then
-              echo "🔎 Running Trivy security scan..."
-              ./scan-trivy.sh
-            else
-              echo "⚠️ Trivy not found – skipping image scan. Install it inside Jenkins container."
-            fi
-          '''
+          withEnv(["IMAGE_NAME=${DOCKER_IMAGE}:latest"]) {
+            sh '''
+              set -e
+              if command -v trivy >/dev/null 2>&1; then
+                echo "🔎 Running Trivy security scan on $IMAGE_NAME..."
+                ./scan-trivy.sh
+              else
+                echo "⚠️ Trivy not found – skipping image scan. Install it inside Jenkins container."
+              fi
+            '''
+          }
         }
       }
     }
@@ -90,33 +114,61 @@ pipeline {
       steps {
         sh '''
           mkdir -p reports
-          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy report found."
-          cp sonar-report.html reports/sonar-report.html || echo "⚠️ No Sonar report found."
+          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy text report found."
+          cp trivy-reports/report.json reports/trivy-report.json || echo "⚠️ No Trivy JSON report found."
+          cp nginx/reports/sonar-report.html reports/sonar-report.html || echo "⚠️ No Sonar report found."
+          cp reports/image-scan.json reports/image-scan.json || echo "⚠️ No external image-scan.json found."
         '''
+        archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
       }
     }
 
-    stage('🚀 Deploy to Kubernetes') {
+    stage('🚀 Deploy with Helm') {
       agent {
         docker {
-          image 'bitnami/kubectl:latest'
+          image 'alpine/helm:3.14.4'
         }
       }
       steps {
-        dir('manifests') {
+        dir('jenkins-demo-chart') {
           sh '''
             set -e
-            echo "🔧 Applying Kubernetes manifests..."
-            kubectl apply -f namespace.yaml --validate=false
-            kubectl apply -f deployment.yaml
-            kubectl apply -f service.yaml
+            echo "🔧 Installing/Upgrading Helm chart..."
+
+            helm upgrade --install jenkins-demo . \
+              --namespace dev --create-namespace \
+              --set springApp.image=venkatesh384/jenkins-demo:latest \
+              --set nginx.image=venkatesh384/nginx-reverse-proxy:latest
 
             echo "⏳ Waiting for rollout to complete..."
-            kubectl rollout status deployment/springboot-app -n dev
+            kubectl rollout status deployment/spring-app -n dev
 
-            echo "📊 Fetching deployed resources..."
+            echo "📊 Helm deployment done. Fetching resources..."
             kubectl get all -n dev
           '''
+        }
+      }
+    }
+
+    stage('🧱 Nginx Docker Build & Push') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-creds',
+          usernameVariable: 'DOCKER_USERNAME',
+          passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+          dir('nginx') {
+            sh '''
+              echo "🔐 Logging in to Docker Hub for Nginx image..."
+              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+              echo "🧱 Building Nginx Docker image..."
+              docker build -t $NGINX_IMAGE:latest .
+
+              echo "📤 Pushing Nginx image to Docker Hub..."
+              docker push $NGINX_IMAGE:latest
+            '''
+          }
         }
       }
     }

@@ -742,4 +742,65 @@ docker run -d --name nginx nginx
 >>> We are moving to Argo CD part, so we can follow the below URL links as per our requirement, Choose carefully our requirement is  Ubuntu (24.04 LTS) or Ubuntu (22.04 LTS),
    1. https://www.fosstechnix.com/install-argocd-on-minikube-with-ubuntu-24-04/
                              (or)
-   2. https://www.fosstechnix.com/how-to-insta
+    2. https://www.fosstechnix.com/how-to-install-argocd-on-minikube/
+
+
+
+# Monitoring tools:
+# 📦 Step 1: Add Helm Repos and Update
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+# ⚙️ Step 2: Prometheus Installation
+
+# 📦 Install Prometheus:
+-------------------------
+cd monitoring/prometheus
+helm install prometheus prometheus-community/prometheus \
+  -f prometheus-values.yaml \
+  --namespace monitoring --create-namespace
+# 📊 Step 3: Grafana Installation (with grafana-values.yaml)
+
+📦 Install Grafana:
+
+cd ../grafana
+helm install grafana grafana/grafana \
+  -f grafana-values.yaml \
+  --namespace monitoring
+
+Step 4: Access Services in Minikube
+kubectl get svc -n monitoring
+
+Then forward or expose them:
+
+minikube service grafana -n monitoring
+minikube service prometheus-server -n monitoring
+
+📈 Step 5: Grafana Setup
+
+1. Open Grafana in the browser (from minikube service).
+
+2. Login: admin / admin123.
+
+3. Add Prometheus as data source:
+
+URL: http://prometheus-server.monitoring.svc.cluster.local
+
+4. Import dashboard ID: 1860 (Node Exporter Full) or any from Grafana Dashboards.
+
+📦 Optional: Install Node Exporter for System Metrics
+
+This is usually included with 
+Prometheus community Helm chart. You can verify with:
+
+kubectl get pods -n monitoring
+
+# Access Prometheus
+
+minikube service prometheus-server -n monitoring
+
+Grafana Login
+Username: admin
+
+Password: admin123

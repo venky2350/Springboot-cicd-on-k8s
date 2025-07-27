@@ -1,11 +1,13 @@
+#### `values.yaml`
 springApp:
-  image: your-dockerhub-username/jenkins-demo:latest
+  image: venkatesh384/jenkins-demo:latest
   port: 8080
 
 nginx:
-  image: your-dockerhub-username/nginx-reverse-proxy:latest
+  image: venkatesh384/nginx-reverse-proxy:latest
   port: 80
 
 ingress:
   enabled: true
-  host: yourproject.dev
+  host: springboot.venky.dev
+

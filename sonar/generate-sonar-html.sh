@@ -1,52 +1,3 @@
-# Project details
-sonar.projectKey=Springboot-cicd-on-k8s
-sonar.projectName=Springboot-cicd-on-k8s
-
-# Source code and binaries
-sonar.sources=src
-sonar.java.binaries=target
-
-# Encoding
-sonar.sourceEncoding=UTF-8
-sonar.language=java
-
-# SonarQube Server
-sonar.host.url=http://23.20.105.203:9000
-
-# Do NOT hardcode token here — pass securely via Jenkins
-# sonar.token=sqp_01f14e2ef5704ad682458e7204539f477ab72578
-
-# ✅ Jenkins Secure Call (use inside Jenkinsfile):
-
-# Update your Jenkinsfile's Sonar step as:
- withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-  sh '''
-    mvn clean verify sonar:sonar \
-      -Dsonar.projectKey=Springboot-cicd-on-k8s \
-      -Dsonar.projectName='Springboot-cicd-on-k8s' \
-      -Dsonar.host.url=http://23.20.105.203:9000 \
-      -Dsonar.token=$SONAR_TOKEN
-  '''
-}
-
-
-# 🔐 Jenkins Setup for sonar-token:
-Go to Manage Jenkins → Credentials → Global
-
-Click Add Credentials
-
-Choose:
-
-Kind: Secret text
-
-Secret: sqp_01f14e2ef5704ad682458e7204539f477ab72578
-
-ID: sonar-token
-
-Description: SonarQube token for Springboot-cicd-on-k8s
-
-
-
 #!/bin/bash
 
 # === CONFIGURATION ===
@@ -113,21 +64,3 @@ cat <<EOF >> nginx/reports/sonar-report.html
 EOF
 
 echo "✅ sonar-report.html generated at nginx/reports/sonar-report.html"
-
-#1. Make it executable:
-chmod +x generate-sonar-html.sh
-
-#2. Run it after Sonar analysis:
-
-./generate-sonar-html.sh
-
-#3.Then rebuild Nginx image to include updated report:
-
- # Final Output URL
-
-http://<nginx-public-ip>/reports/sonar-report.html
-
-
-
-
-

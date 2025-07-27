@@ -1,6 +1,8 @@
+#### `Chart.yaml`
 apiVersion: v2
 name: jenkins-demo
 description: Helm chart for deploying Spring Boot app with Nginx reverse proxy
-type: application
 version: 1.0.0
 appVersion: "1.0"
+type: application
+

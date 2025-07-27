@@ -4,22 +4,28 @@
 # Trivy Docker Image Scanner
 # ----------------------------
 
-IMAGE_NAME=your-dockerhub-username/jenkins-demo:latest
+IMAGE_NAME=${IMAGE_NAME:-venkatesh384/jenkins-demo:latest}
 REPORT_DIR="trivy-reports"
-REPORT_FILE="$REPORT_DIR/image-scan-report.txt"
+TEXT_REPORT="$REPORT_DIR/image-scan-report.txt"
+JSON_REPORT="$REPORT_DIR/report.json"
 
 # Ensure report directory exists
 mkdir -p "$REPORT_DIR"
 
 echo "🔍 Scanning Docker image: $IMAGE_NAME"
-trivy image "$IMAGE_NAME" > "$REPORT_FILE"
 
-if grep -q "CRITICAL" "$REPORT_FILE"; then
+# Plain text scan output
+trivy image "$IMAGE_NAME" > "$TEXT_REPORT"
+
+# JSON output for archiving and integration
+trivy image --format json --output "$JSON_REPORT" "$IMAGE_NAME"
+
+if grep -q "CRITICAL" "$TEXT_REPORT"; then
     echo "❌ Critical vulnerabilities found in $IMAGE_NAME!"
     echo "----- Report -----"
-    cat "$REPORT_FILE"
+    cat "$TEXT_REPORT"
     exit 1
 else
     echo "✅ No critical vulnerabilities found in $IMAGE_NAME."
-    echo "Report saved to $REPORT_FILE"
+    echo "Reports saved to $TEXT_REPORT and $JSON_REPORT"
 fi
