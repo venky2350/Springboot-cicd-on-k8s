@@ -21,7 +21,6 @@
 
   <properties>
     <java.version>17</java.version>
-    <!-- Allows conditional skipping of HTML generation -->
     <skip.sonar.html>false</skip.sonar.html>
   </properties>
 
@@ -56,14 +55,14 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- ✅ SonarQube Plugin -->
+      <!-- ✅ SonarQube Plugin for Maven 3.8.7 -->
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.9.6</version>
+        <version>3.8.7</version>
       </plugin>
 
-      <!-- ✅ Exec Plugin to run custom Sonar HTML report script -->
+      <!-- ✅ Exec Plugin to run Sonar HTML script -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -78,10 +77,8 @@
             <configuration>
               <executable>bash</executable>
               <arguments>
-                <!-- Corrected relative path -->
                 <argument>${project.basedir}/app/scripts/generate-sonar-html.sh</argument>
               </arguments>
-              <!-- Optional skip flag to prevent build failure -->
               <skip>${skip.sonar.html}</skip>
             </configuration>
           </execution>
@@ -105,7 +102,6 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <!-- Enables the report generation when explicitly activated -->
         <skip.sonar.html>false</skip.sonar.html>
       </properties>
     </profile>
