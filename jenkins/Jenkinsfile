@@ -39,8 +39,8 @@ pipeline {
                 mvn clean verify sonar:sonar \
   -Dsonar.projectKey=Springboot-cicd-on-k8s \
   -Dsonar.projectName='Springboot-cicd-on-k8s' \
-  -Dsonar.host.url=http://3.85.11.214:9000 \
-  -Dsonar.token=sqp_17e268cdc54820b41d9f852ef1888b9f30befbf8
+  -Dsonar.host.url=http://54.162.210.95:9000 \
+  -Dsonar.token=sqp_769b23655fcfe48703da63bfa408319399a380e9
               '''
             }
           }
@@ -55,8 +55,8 @@ pipeline {
             echo "📥 Generating SonarQube HTML report..."
 
             mkdir -p .
-            curl -s -u "sqp_17e268cdc54820b41d9f852ef1888b9f30befbf8:" \
-              "http://3.85.11.214:9000/api/issues/search?componentKeys=Springboot-cicd-on-k8s&types=BUG,VULNERABILITY,CODE_SMELL" \
+            curl -s -u "sqp_769b23655fcfe48703da63bfa408319399a380e9:" \
+              "http://54.162.210.95:9000/api/issues/search?componentKeys=Springboot-cicd-on-k8s&types=BUG,VULNERABILITY,CODE_SMELL" \
               -o sonar-report.json
 
             echo "<html><body><h2>Sonar Issues Report</h2><pre>" > sonar-report.html
