@@ -60,7 +60,7 @@
         <version>3.8.7</version>
       </plugin>
 
-      <!-- ✅ Optional: HTML Report Generator (calls shell script) -->
+      <!-- ✅ HTML Report Generator Plugin (calls shell script) -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -81,10 +81,25 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- ✅ Sonar HTML Report Plugin -->
+      <plugin>
+        <groupId>com.github.sbaudoin</groupId>
+        <artifactId>sonar-report</artifactId>
+        <version>1.4.1</version>
+      </plugin>
     </plugins>
   </build>
 
-  <!-- ✅ Profile to manually trigger HTML generation -->
+  <!-- ✅ Plugin Repository for sonar-report -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sonar-report-repo</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/releases</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <!-- ✅ Profile (if manual generation needed) -->
   <profiles>
     <profile>
       <id>generate-sonar-html</id>
