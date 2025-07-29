@@ -1,20 +1,22 @@
 #!/bin/bash
+# File: app/scripts/generate-sonar-html.sh
 
 set -e
 
-# Define variables
+# Variables
 SONAR_HOST_URL="http://54.162.210.95:9000"
-SONAR_PROJECT_KEY="Springboot-cicd-on-k8s"
-SONAR_TOKEN="sqp_769b23655fcfe48703da63bfa408319399a380e9"
+PROJECT_KEY="Springboot-cicd-on-k8s"
+TOKEN="sqp_769b23655fcfe48703da63bfa408319399a380e9"
+REPORT_DIR="target/sonar-report"
 
-# Create a report output directory
-mkdir -p target/sonar-report
+# Create directory for report
+mkdir -p "$REPORT_DIR"
 
-# Download sonar-report package and run report generation
-docker run --rm \
-  -e SONAR_TOKEN=$SONAR_TOKEN \
-  -e SONAR_HOST_URL=$SONAR_HOST_URL \
-  -e SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY \
-  -v "$(pwd)/target/sonar-report:/app/output" \
-  ghcr.io/cnescatlab/sonar-report:latest \
-  -i html -o /app/output
+# Download the sonar-report tool (optional; if using third-party tools)
+# wget https://github.com/cnescatlab/sonar-report/releases/download/1.4.0/sonar-report.jar -O sonar-report.jar
+
+# Generate HTML report using API
+curl -u "$TOKEN": "$SONAR_HOST_URL/api/issues/search?componentKeys=$PROJECT_KEY&types=BUG,VULNERABILITY,CODE_SMELL" -o "$REPORT_DIR/sonar-report.json"
+
+# Optionally convert to HTML or display as-is
+echo "SonarQube JSON report saved at $REPORT_DIR/sonar-report.json"
