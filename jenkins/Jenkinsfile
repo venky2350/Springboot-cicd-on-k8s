@@ -50,12 +50,12 @@ pipeline {
 
     stage('📄 Generate Sonar HTML Report') {
       steps {
-        dir('nginx/reports') {
+        dir('reports') {
           sh '''
             echo "📥 Generating SonarQube HTML report..."
 
             mkdir -p .
-            curl -s -u "sqp_01f14e2ef5704ad682458e7204539f477ab72578:" \
+            curl -s -u "sqp_17e268cdc54820b41d9f852ef1888b9f30befbf8:" \
               "http://3.85.11.214:9000/api/issues/search?componentKeys=Springboot-cicd-on-k8s&types=BUG,VULNERABILITY,CODE_SMELL" \
               -o sonar-report.json
 
