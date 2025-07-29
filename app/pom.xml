@@ -25,20 +25,27 @@
   </properties>
 
   <dependencies>
+    <!-- Spring Boot Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+
+    <!-- Thymeleaf Template Engine -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
+
+    <!-- Devtools for live reload -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
+
+    <!-- Unit Testing -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -48,20 +55,20 @@
 
   <build>
     <plugins>
-      <!-- ✅ Spring Boot Plugin -->
+      <!-- Spring Boot Plugin -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- ✅ SonarQube Scanner Plugin -->
+      <!-- SonarQube Scanner Plugin -->
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
         <version>3.8.7</version>
       </plugin>
 
-      <!-- ✅ HTML Report Generation via Shell Script -->
+      <!-- Exec Plugin to generate HTML report from SonarQube results -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -87,7 +94,7 @@
     </plugins>
   </build>
 
-  <!-- ✅ Optional Profile to Manually Trigger HTML Report -->
+  <!-- Optional Profile to trigger HTML generation manually -->
   <profiles>
     <profile>
       <id>generate-sonar-html</id>
@@ -99,4 +106,5 @@
       </properties>
     </profile>
   </profiles>
+
 </project>
