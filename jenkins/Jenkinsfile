@@ -162,6 +162,15 @@ pipeline {
               echo "🔐 Logging in to Docker Hub for Nginx image..."
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
+              echo "✅ Checking required files..."
+              [ -f default.conf ] || { echo "❌ default.conf missing!"; exit 1; }
+              [ -f index.html ] || { echo "❌ index.html missing!"; exit 1; }
+              [ -f reports/sonar-report.html ] || {
+                echo "⚠️ sonar-report.html not found. Creating a placeholder..."
+                mkdir -p reports
+                echo "<html><body><h2>No Sonar Report Found</h2></body></html>" > reports/sonar-report.html
+              }
+
               echo "🧱 Building Nginx Docker image..."
               docker build -t $NGINX_IMAGE:latest .
 
