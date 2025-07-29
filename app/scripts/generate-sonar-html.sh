@@ -1,17 +1,14 @@
 #!/bin/bash
-# app/scripts/generate-sonar-html.sh
+# Ensure Node.js is installed and sonar-report is globally available
 
-set -e
+# Install sonar-report if not already installed
+npm install -g sonar-report
 
-SONAR_HOST="http://54.162.210.95:9000"
-PROJECT_KEY="Springboot-cicd-on-k8s"
-SONAR_TOKEN="sqp_769b23655fcfe48703da63bfa408319399a380e9"
-REPORT_DIR="target/sonar-report"
+# Generate the report
+sonar-report \
+  -k "Springboot-cicd-on-k8s" \
+  -t "sqp_769b23655fcfe48703da63bfa408319399a380e9" \
+  -u "http://54.162.210.95:9000" \
+  -o "target/sonar-report"
 
-mkdir -p "$REPORT_DIR"
-
-curl -s -u "$SONAR_TOKEN": \
-  "$SONAR_HOST/api/issues/search?componentKeys=$PROJECT_KEY&types=BUG,VULNERABILITY,CODE_SMELL" \
-  -o "$REPORT_DIR/report.json"
-
-echo "✅ Sonar report generated at $REPORT_DIR/report.json"
+echo "SonarQube HTML report generated at: target/sonar-report/index.html"

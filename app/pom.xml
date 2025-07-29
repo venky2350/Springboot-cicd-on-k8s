@@ -55,14 +55,14 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- ✅ SonarQube Plugin for Maven 3.8.7 -->
+      <!-- ✅ SonarQube Scanner -->
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.8.7</version>
+        <version>3.8.0.2131</version> <!-- Stable fallback version -->
       </plugin>
 
-      <!-- ✅ Exec Plugin to run Sonar HTML script -->
+      <!-- ✅ Exec Plugin: Generate HTML Report After Sonar Analysis -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -77,9 +77,11 @@
             <configuration>
               <executable>bash</executable>
               <arguments>
-                <argument>${project.basedir}/app/scripts/generate-sonar-html.sh</argument>
+                <argument>${project.basedir}/scripts/generate-sonar-html.sh</argument>
               </arguments>
               <skip>${skip.sonar.html}</skip>
+              <!-- Don't fail the whole build if script errors -->
+              <ignoreExitValue>true</ignoreExitValue>
             </configuration>
           </execution>
         </executions>
@@ -106,4 +108,5 @@
       </properties>
     </profile>
   </profiles>
+
 </project>
