@@ -21,6 +21,7 @@
 
   <properties>
     <java.version>17</java.version>
+    <skip.sonar.html>false</skip.sonar.html>
   </properties>
 
   <dependencies>
@@ -53,14 +54,14 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- ✅ SonarQube Plugin -->
+      <!-- ✅ SonarQube Scanner Plugin -->
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
         <version>3.8.7</version>
       </plugin>
 
-      <!-- ✅ Optional: HTML Report Generator (calls shell script) -->
+      <!-- ✅ HTML Report Generation via Shell Script -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -77,6 +78,8 @@
               <arguments>
                 <argument>${project.basedir}/scripts/generate-sonar-html.sh</argument>
               </arguments>
+              <skip>${skip.sonar.html}</skip>
+              <ignoreExitValue>true</ignoreExitValue>
             </configuration>
           </execution>
         </executions>
@@ -84,21 +87,16 @@
     </plugins>
   </build>
 
-  <!-- ✅ Profile to manually trigger HTML generation -->
+  <!-- ✅ Optional Profile to Manually Trigger HTML Report -->
   <profiles>
     <profile>
       <id>generate-sonar-html</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <skip.sonar.html>false</skip.sonar.html>
+      </properties>
     </profile>
   </profiles>
 </project>
