@@ -31,13 +31,13 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- Thymeleaf Template Engine -->
+    <!-- Thymeleaf for UI -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
 
-    <!-- Devtools for live reload -->
+    <!-- DevTools for Hot Reload (runtime only) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -45,7 +45,7 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- Unit Testing -->
+    <!-- Test Support -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -55,20 +55,20 @@
 
   <build>
     <plugins>
-      <!-- Spring Boot Plugin -->
+      <!-- ✅ Spring Boot Plugin -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- SonarQube Scanner Plugin -->
+      <!-- ✅ SonarQube Scanner Plugin -->
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.8.7</version>
+        <version>3.9.1.2184</version>
       </plugin>
 
-      <!-- Exec Plugin to generate HTML report from SonarQube results -->
+      <!-- ✅ Shell Script Execution for HTML Report -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -94,7 +94,7 @@
     </plugins>
   </build>
 
-  <!-- Optional Profile to trigger HTML generation manually -->
+  <!-- ✅ Optional Profile for Manual HTML Report Trigger -->
   <profiles>
     <profile>
       <id>generate-sonar-html</id>
@@ -107,4 +107,11 @@
     </profile>
   </profiles>
 
+  <!-- ✅ Plugin Repositories (in case Maven central mirror is slow or blocked) -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
