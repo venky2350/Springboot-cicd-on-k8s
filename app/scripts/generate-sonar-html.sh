@@ -1,20 +1,20 @@
 #!/bin/bash
+
 set -e
 
-SONAR_HOST="http://54.162.210.95:9000"
-PROJECT_KEY="Springboot-cicd-on-k8s"
-AUTH_HEADER="Authorization: Bearer $SONAR_TOKEN"
+# Define variables
+SONAR_HOST_URL="http://54.162.210.95:9000"
+SONAR_PROJECT_KEY="Springboot-cicd-on-k8s"
+SONAR_TOKEN="sqp_769b23655fcfe48703da63bfa408319399a380e9"
 
-echo "📡 Fetching latest analysis ID..."
-analysisId=$(curl -s -H "$AUTH_HEADER" "$SONAR_HOST/api/project_analyses/search?project=$PROJECT_KEY" | jq -r '.analyses[0].analysis')
-
-if [ -z "$analysisId" ]; then
-  echo "❌ Failed to retrieve analysisId"
-  exit 1
-fi
-
-echo "📥 Downloading HTML report..."
+# Create a report output directory
 mkdir -p target/sonar-report
-curl -s -H "$AUTH_HEADER" "$SONAR_HOST/api/report/report?analysisId=$analysisId" -o target/sonar-report/index.html
 
-echo "✅ Sonar HTML report saved to target/sonar-report/index.html"
+# Download sonar-report package and run report generation
+docker run --rm \
+  -e SONAR_TOKEN=$SONAR_TOKEN \
+  -e SONAR_HOST_URL=$SONAR_HOST_URL \
+  -e SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY \
+  -v "$(pwd)/target/sonar-report:/app/output" \
+  ghcr.io/cnescatlab/sonar-report:latest \
+  -i html -o /app/output
