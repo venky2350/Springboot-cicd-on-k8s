@@ -53,14 +53,14 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- ✅ SonarQube Plugin -->
+      <!-- ✅ SonarQube Plugin (version updated to latest) -->
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.8.7</version>
+        <version>3.9.1.2184</version>
       </plugin>
 
-      <!-- ✅ HTML Report Generator Plugin (calls shell script) -->
+      <!-- ✅ Shell Script to Generate Sonar HTML Report -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -77,12 +77,13 @@
               <arguments>
                 <argument>${project.basedir}/scripts/generate-sonar-html.sh</argument>
               </arguments>
+              <skip>${skip.sonar.html}</skip> <!-- Optional: skip via -Dskip.sonar.html=true -->
             </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <!-- ✅ Sonar HTML Report Plugin -->
+      <!-- ✅ Optional: Sonar HTML Report Plugin (used in script) -->
       <plugin>
         <groupId>com.github.sbaudoin</groupId>
         <artifactId>sonar-report</artifactId>
@@ -91,7 +92,6 @@
     </plugins>
   </build>
 
-  <!-- ✅ Plugin Repository for sonar-report -->
   <pluginRepositories>
     <pluginRepository>
       <id>sonar-report-repo</id>
@@ -99,7 +99,7 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <!-- ✅ Profile (if manual generation needed) -->
+  <!-- ✅ Optional Profile (manual generation) -->
   <profiles>
     <profile>
       <id>generate-sonar-html</id>
