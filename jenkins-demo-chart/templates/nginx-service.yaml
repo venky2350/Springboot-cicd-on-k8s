@@ -9,5 +9,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: {{ .Values.nginx.port }}
+      targetPort: {{ .Values.nginx.port | default 80 }}
   type: ClusterIP
