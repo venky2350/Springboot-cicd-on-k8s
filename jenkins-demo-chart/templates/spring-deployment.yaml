@@ -18,3 +18,15 @@ spec:
           image: {{ .Values.springApp.image }}
           ports:
             - containerPort: {{ .Values.springApp.port }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health  # If you use Spring Boot actuator
+              port: {{ .Values.springApp.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.springApp.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 20

@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jenkins-demo-ingress
+  namespace: dev
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
@@ -10,21 +11,21 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /app/?(.*)
+          - path: /app(/|$)(.*)
             pathType: Prefix
             backend:
               service:
                 name: spring-service
                 port:
                   number: 8080
-          - path: /admin/?(.*)
+          - path: /admin(/|$)(.*)
             pathType: Prefix
             backend:
               service:
                 name: nginx-service
                 port:
                   number: 80
-          - path: /reports/?(.*)
+          - path: /reports(/|$)(.*)
             pathType: Prefix
             backend:
               service:

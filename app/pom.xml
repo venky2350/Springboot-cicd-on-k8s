@@ -57,48 +57,8 @@
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.8.7</version>
-      </plugin>
-
-      <!-- ✅ Optional: HTML Report Generator (calls shell script) -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>generate-sonar-html</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>bash</executable>
-              <arguments>
-                <argument>${project.basedir}/scripts/generate-sonar-html.sh</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
+        <version>3.8.0.2131</version>
       </plugin>
     </plugins>
   </build>
-
-  <!-- ✅ Profile to manually trigger HTML generation -->
-  <profiles>
-    <profile>
-      <id>generate-sonar-html</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
