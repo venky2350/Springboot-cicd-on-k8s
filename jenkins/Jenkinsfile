@@ -9,13 +9,10 @@ pipeline {
   environment {
     SONARQUBE = 'SonarQube'
     DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
-    NGINX_IMAGE = 'venkatesh384/nginx-reverse-proxy'
     IMAGE_TAG = "${BUILD_NUMBER}"
     REGISTRY_CREDS = 'dockerhub-creds'
     CHART_PATH = 'jenkins-demo-chart'
     APP_DIR = 'app'
-    NGINX_DIR = 'nginx'
-    REPORT_DIR = 'reports'
   }
 
   stages {
@@ -52,7 +49,7 @@ pipeline {
       }
     }
 
-    stage('🐳 Docker Build & Push - Spring App') {
+    stage('🐳 Docker Build & Push') {
       steps {
         withCredentials([usernamePassword(credentialsId: "${REGISTRY_CREDS}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
           dir("${APP_DIR}") {
@@ -88,18 +85,18 @@ pipeline {
       steps {
         script {
           docker.image('lachlanevenson/k8s-helm:latest')
-                .inside('--entrypoint=""') {
-            dir("${CHART_PATH}") {
-              sh '''
-                helm upgrade --install jenkins-demo . \
-                  --namespace dev --create-namespace \
-                  --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG \
-                  --set nginx.image=$NGINX_IMAGE:$IMAGE_TAG
+                .inside('-v $HOME/.kube:/root/.kube --entrypoint=""') {
+            withEnv(["KUBECONFIG=/root/.kube/config"]) {
+              dir("${CHART_PATH}") {
+                sh '''
+                  helm upgrade --install jenkins-demo . \
+                    --namespace dev --create-namespace \
+                    --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG
 
-                kubectl rollout status deployment/spring-app -n dev
-                kubectl rollout status deployment/nginx-proxy -n dev || true
-                kubectl get all -n dev
-              '''
+                  kubectl rollout status deployment/spring-app -n dev
+                  kubectl get all -n dev
+                '''
+              }
             }
           }
         }
