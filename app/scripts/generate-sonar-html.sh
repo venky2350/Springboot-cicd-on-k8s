@@ -1,23 +1,26 @@
 #!/bin/bash
+
+# This script generates an HTML report from the SonarQube analysis
+# Requires sonar-report plugin enabled on your SonarQube server
+
 set -e
 
-# CONFIG
-SONAR_HOST_URL="http://44.203.182.235:9000"
-SONAR_TOKEN="sqp_6c15a28dd79bf8a9b25f0975f29eae5fdc325db3"
-PROJECT_KEY="Springboot-cicd-on-k8s"
-REPORT_DIR="target/sonar-report"  
+# Variables
+SONAR_HOST_URL="http://<your-sonarqube-host>:9000"
+SONAR_PROJECT_KEY="jenkins-demo"
+SONAR_TOKEN="sqp_6c15a28dd79bf8a9b25f0975f29eae5fdc325db3"  # Replace with your actual token
+REPORT_DIR="target/sonar-reports"
 
-mkdir -p "$REPORT_DIR"
+# Create report directory
+mkdir -p $REPORT_DIR
 
-# Call SonarQube API to get issues
-curl -s -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/issues/search?componentKeys=$PROJECT_KEY" | \
-jq '.' > "$REPORT_DIR/raw-sonar-report.json"
+# Generate report using sonar-report API or download it if enabled
+curl -u "$SONAR_TOKEN:" \
+  "$SONAR_HOST_URL/api/report/export_html?projectKey=$SONAR_PROJECT_KEY" \
+  -o "$REPORT_DIR/sonar-report.html"
 
-# Basic HTML output
-jq -r '
-  "<html><head><title>SonarQube Report</title></head><body><h1>Issues Report</h1><ul>" +
-  (.issues[] | "<li><b>\(.severity)</b>: \(.message) (<i>\(.component)</i>)</li>") +
-  "</ul></body></html>"
-' "$REPORT_DIR/raw-sonar-report.json" > "$REPORT_DIR/index.html"    
-
-echo "✅ HTML report generated at: $REPORT_DIR/index.html"
+if [ $? -eq 0 ]; then
+  echo "✅ SonarQube HTML report saved to $REPORT_DIR/sonar-report.html"
+else
+  echo "❌ Failed to generate SonarQube HTML report"
+fi
