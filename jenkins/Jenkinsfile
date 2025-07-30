@@ -53,6 +53,7 @@ pipeline {
       steps {
         dir('app') {
           withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+            sh 'chmod +x app/scripts/generate-sonar-html.sh'
             sh './scripts/generate-sonar-html.sh'
           }
         }
