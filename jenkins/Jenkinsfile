@@ -48,7 +48,7 @@ pipeline {
       }
     }
 
-    stage('🐳 Docker Build & Push') {
+    stage('🐳 Docker Build & Push - Spring App') {
       steps {
         withCredentials([usernamePassword(
           credentialsId: 'dockerhub-creds',
@@ -97,28 +97,6 @@ pipeline {
       }
     }
 
-    stage('🚀 Deploy with Helm') {
-      agent {
-        docker {
-          image 'lachlanevenson/k8s-helm:latest'
-        }
-      }
-      steps {
-        dir('jenkins-demo-chart') {
-          sh '''
-            set -e
-            helm upgrade --install jenkins-demo . \
-              --namespace dev --create-namespace \
-              --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG \
-              --set nginx.image=$NGINX_IMAGE:$IMAGE_TAG
-
-            kubectl rollout status deployment/spring-app -n dev
-            kubectl get all -n dev
-          '''
-        }
-      }
-    }
-
     stage('🧱 Nginx Docker Build & Push') {
       steps {
         withCredentials([usernamePassword(
@@ -142,6 +120,28 @@ pipeline {
               docker push $NGINX_IMAGE:$IMAGE_TAG
             '''
           }
+        }
+      }
+    }
+
+    stage('🚀 Deploy with Helm') {
+      agent {
+        docker {
+          image 'lachlanevenson/k8s-helm:latest'
+        }
+      }
+      steps {
+        dir('jenkins-demo-chart') {
+          sh '''
+            set -e
+            helm upgrade --install jenkins-demo . \
+              --namespace dev --create-namespace \
+              --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG \
+              --set nginx.image=$NGINX_IMAGE:$IMAGE_TAG
+
+            kubectl rollout status deployment/spring-app -n dev
+            kubectl get all -n dev
+          '''
         }
       }
     }

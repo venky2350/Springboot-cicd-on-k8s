@@ -4,6 +4,8 @@
 # Trivy Docker Image Scanner
 # ----------------------------
 
+set -e
+
 IMAGE_NAME=${IMAGE_NAME:-venkatesh384/jenkins-demo:latest}
 REPORT_DIR="trivy-reports"
 TEXT_REPORT="$REPORT_DIR/image-scan-report.txt"
