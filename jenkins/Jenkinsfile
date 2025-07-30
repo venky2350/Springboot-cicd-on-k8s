@@ -72,12 +72,12 @@ pipeline {
           withEnv(["IMAGE_NAME=${DOCKER_IMAGE}:${IMAGE_TAG}"]) {
             sh '''
               set -e
-              if command -v trivy >/dev/null 2>&1; then
+              if command -v trivy >/dev/null 2>&1 && command -v sarif-multitool >/dev/null 2>&1; then
                 echo "🔎 Running Trivy security scan on $IMAGE_NAME..."
                 chmod +x scan-trivy.sh
                 ./scan-trivy.sh
               else
-                echo "⚠️ Trivy not found – skipping image scan."
+                echo "⚠️ Trivy or SARIF multitool not found – skipping scan."
               fi
             '''
           }
@@ -89,9 +89,10 @@ pipeline {
       steps {
         sh '''
           mkdir -p reports
-          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy text report found."
-          cp trivy-reports/report.json reports/trivy-report.json || echo "⚠️ No Trivy JSON report found."
-          cp app/target/sonar-report/index.html reports/sonar-report.html || echo "⚠️ No Sonar HTML report found."
+          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy TXT"
+          cp trivy-reports/report.json reports/trivy-report.json || echo "⚠️ No Trivy JSON"
+          cp trivy-reports/trivy-report.html reports/trivy-report.html || echo "⚠️ No Trivy HTML"
+          cp app/target/sonar-report/index.html reports/sonar-report.html || echo "⚠️ No Sonar HTML"
         '''
         archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
       }
