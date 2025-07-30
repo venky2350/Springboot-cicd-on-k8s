@@ -84,42 +84,6 @@ pipeline {
       }
     }
 
-    stage('📄 Archive Reports') {
-      steps {
-        sh '''
-          mkdir -p reports
-          cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy TXT"
-          cp trivy-reports/trivy-report.html reports/trivy-report.html || echo "⚠️ No Trivy HTML"
-          cp ${APP_DIR}/target/sonar-report/index.html reports/sonar-report.html || echo "⚠️ No Sonar HTML"
-        '''
-        archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
-      }
-    }
-
-    stage('🧱 Nginx Docker Build & Push') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${REGISTRY_CREDS}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-          dir("${NGINX_DIR}") {
-            sh '''
-              echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-
-              [ -f default.conf ] || { echo "❌ default.conf missing!"; exit 1; }
-              [ -f index.html ] || { echo "❌ index.html missing!"; exit 1; }
-
-              # Copy sonar report HTML to be served by nginx
-              cp ../reports/sonar-report.html ./ || {
-                echo "⚠️ No Sonar report found – generating placeholder"
-                echo "<html><body><h2>No Sonar Report Found</h2></body></html>" > sonar-report.html
-              }
-
-              docker build -t $NGINX_IMAGE:$IMAGE_TAG .
-              docker push $NGINX_IMAGE:$IMAGE_TAG
-            '''
-          }
-        }
-      }
-    }
-
     stage('🚀 Deploy with Helm') {
       steps {
         script {
