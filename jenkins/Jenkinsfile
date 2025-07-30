@@ -121,23 +121,23 @@ pipeline {
     }
 
     stage('🚀 Deploy with Helm') {
-      agent {
-        docker {
-          image 'lachlanevenson/k8s-helm:latest'
-        }
-      }
       steps {
-        dir("${CHART_PATH}") {
-          sh '''
-            helm upgrade --install jenkins-demo . \
-              --namespace dev --create-namespace \
-              --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG \
-              --set nginx.image=$NGINX_IMAGE:$IMAGE_TAG
+        script {
+          docker.image('lachlanevenson/k8s-helm:latest')
+                .inside('--entrypoint=""') {
+            dir("${CHART_PATH}") {
+              sh '''
+                helm upgrade --install jenkins-demo . \
+                  --namespace dev --create-namespace \
+                  --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG \
+                  --set nginx.image=$NGINX_IMAGE:$IMAGE_TAG
 
-            kubectl rollout status deployment/spring-app -n dev
-            kubectl rollout status deployment/nginx-proxy -n dev || true
-            kubectl get all -n dev
-          '''
+                kubectl rollout status deployment/spring-app -n dev
+                kubectl rollout status deployment/nginx-proxy -n dev || true
+                kubectl get all -n dev
+              '''
+            }
+          }
         }
       }
     }
