@@ -107,7 +107,7 @@
     </profile>
   </profiles>
 
-  <!-- ✅ Plugin Repositories (in case Maven central mirror is slow or blocked) -->
+  <!-- ✅ Plugin Repositories -->
   <pluginRepositories>
     <pluginRepository>
       <id>central</id>
