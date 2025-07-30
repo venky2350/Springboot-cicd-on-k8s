@@ -20,7 +20,8 @@ spec:
             - containerPort: {{ .Values.nginx.port }}
           volumeMounts:
             - name: nginx-config
-              mountPath: /etc/nginx/conf.d
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
           readinessProbe:
             httpGet:
               path: /

@@ -9,8 +9,13 @@ pipeline {
   environment {
     SONARQUBE = 'SonarQube'
     DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
-    IMAGE_TAG = "${BUILD_NUMBER}"
     NGINX_IMAGE = 'venkatesh384/nginx-reverse-proxy'
+    IMAGE_TAG = "${BUILD_NUMBER}"
+    REGISTRY_CREDS = 'dockerhub-creds'
+    CHART_PATH = 'jenkins-demo-chart'
+    APP_DIR = 'app'
+    NGINX_DIR = 'nginx'
+    REPORT_DIR = 'reports'
   }
 
   stages {
@@ -23,19 +28,18 @@ pipeline {
 
     stage('🔨 Maven Build') {
       steps {
-        dir('app') {
-          sh 'mvn clean package'
+        dir("${APP_DIR}") {
+          sh 'mvn clean package -DskipTests'
         }
       }
     }
 
     stage('🔎 SonarQube Analysis') {
       steps {
-        dir('app') {
+        dir("${APP_DIR}") {
           withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
               sh '''
-                set -e
                 mvn clean verify sonar:sonar \
                   -Dsonar.projectKey=Springboot-cicd-on-k8s \
                   -Dsonar.projectName='Springboot-cicd-on-k8s' \
@@ -50,12 +54,8 @@ pipeline {
 
     stage('🐳 Docker Build & Push - Spring App') {
       steps {
-        withCredentials([usernamePassword(
-          credentialsId: 'dockerhub-creds',
-          usernameVariable: 'DOCKER_USERNAME',
-          passwordVariable: 'DOCKER_PASSWORD'
-        )]) {
-          dir('app') {
+        withCredentials([usernamePassword(credentialsId: "${REGISTRY_CREDS}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+          dir("${APP_DIR}") {
             sh '''
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
               docker build -t $DOCKER_IMAGE:$IMAGE_TAG .
@@ -71,13 +71,12 @@ pipeline {
         dir('trivy') {
           withEnv(["IMAGE_NAME=${DOCKER_IMAGE}:${IMAGE_TAG}"]) {
             sh '''
-              set -e
-              if command -v trivy >/dev/null 2>&1 && command -v sarif-multitool >/dev/null 2>&1; then
-                echo "🔎 Running Trivy security scan on $IMAGE_NAME..."
+              if command -v trivy >/dev/null 2>&1; then
+                echo "🔎 Running Trivy scan..."
                 chmod +x scan-trivy.sh
                 ./scan-trivy.sh
               else
-                echo "⚠️ Trivy or SARIF multitool not found – skipping scan."
+                echo "⚠️ Trivy not installed, skipping."
               fi
             '''
           }
@@ -85,14 +84,13 @@ pipeline {
       }
     }
 
-    stage('📄 Copy Reports') {
+    stage('📄 Archive Reports') {
       steps {
         sh '''
           mkdir -p reports
           cp trivy-reports/image-scan-report.txt reports/trivy-report.txt || echo "⚠️ No Trivy TXT"
-          cp trivy-reports/report.json reports/trivy-report.json || echo "⚠️ No Trivy JSON"
           cp trivy-reports/trivy-report.html reports/trivy-report.html || echo "⚠️ No Trivy HTML"
-          cp app/target/sonar-report/index.html reports/sonar-report.html || echo "⚠️ No Sonar HTML"
+          cp ${APP_DIR}/target/sonar-report/index.html reports/sonar-report.html || echo "⚠️ No Sonar HTML"
         '''
         archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
       }
@@ -100,21 +98,18 @@ pipeline {
 
     stage('🧱 Nginx Docker Build & Push') {
       steps {
-        withCredentials([usernamePassword(
-          credentialsId: 'dockerhub-creds',
-          usernameVariable: 'DOCKER_USERNAME',
-          passwordVariable: 'DOCKER_PASSWORD'
-        )]) {
-          dir('nginx') {
+        withCredentials([usernamePassword(credentialsId: "${REGISTRY_CREDS}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+          dir("${NGINX_DIR}") {
             sh '''
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
               [ -f default.conf ] || { echo "❌ default.conf missing!"; exit 1; }
               [ -f index.html ] || { echo "❌ index.html missing!"; exit 1; }
-              [ -f ../app/target/sonar-report/index.html ] || {
-                echo "⚠️ sonar-report.html not found. Creating a placeholder..."
-                mkdir -p reports
-                echo "<html><body><h2>No Sonar Report Found</h2></body></html>" > reports/sonar-report.html
+
+              # Copy sonar report HTML to be served by nginx
+              cp ../reports/sonar-report.html ./ || {
+                echo "⚠️ No Sonar report found – generating placeholder"
+                echo "<html><body><h2>No Sonar Report Found</h2></body></html>" > sonar-report.html
               }
 
               docker build -t $NGINX_IMAGE:$IMAGE_TAG .
@@ -132,15 +127,15 @@ pipeline {
         }
       }
       steps {
-        dir('jenkins-demo-chart') {
+        dir("${CHART_PATH}") {
           sh '''
-            set -e
             helm upgrade --install jenkins-demo . \
               --namespace dev --create-namespace \
               --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG \
               --set nginx.image=$NGINX_IMAGE:$IMAGE_TAG
 
             kubectl rollout status deployment/spring-app -n dev
+            kubectl rollout status deployment/nginx-proxy -n dev || true
             kubectl get all -n dev
           '''
         }

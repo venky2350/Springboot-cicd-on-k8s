@@ -1,35 +1,32 @@
-{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jenkins-demo-ingress
   namespace: dev
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-    - host: {{ .Values.ingress.host }}
-      http:
+    - http:
         paths:
           - path: /app(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
-                name: spring-service
+                name: spring-app
                 port:
                   number: 8080
           - path: /admin(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
-                name: nginx-service
+                name: spring-app
                 port:
-                  number: 80
+                  number: 8080
           - path: /reports(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
-                name: nginx-service
+                name: nginx-proxy
                 port:
                   number: 80
-{{- end }}
