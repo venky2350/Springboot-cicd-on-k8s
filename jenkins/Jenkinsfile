@@ -48,17 +48,6 @@ pipeline {
       }
     }
 
-    stage('📄 Generate Sonar HTML Report') {
-      steps {
-        dir('app') {
-          withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-            sh 'chmod +x scripts/generate-sonar-html.sh'
-            sh './scripts/generate-sonar-html.sh'
-          }
-        }
-      }
-    }
-
     stage('🐳 Docker Build & Push') {
       steps {
         withCredentials([usernamePassword(
