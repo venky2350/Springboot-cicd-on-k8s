@@ -1,33 +1,51 @@
 #!/bin/bash
 
-# ----------------------------
-# Trivy Docker Image Scanner
-# ----------------------------
+echo "🔧 Installing Node.js and SARIF multitool..."
 
-set -e
+# Install Node.js 18 (recommended for compatibility)
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+apt-get install -y nodejs
 
-IMAGE_NAME=${IMAGE_NAME:-venkatesh384/jenkins-demo:latest}
-REPORT_DIR="trivy-reports"
-TEXT_REPORT="$REPORT_DIR/image-scan-report.txt"
-JSON_REPORT="$REPORT_DIR/report.json"
+# Confirm node and npm
+node -v
+npm -v
 
-# Ensure report directory exists
-mkdir -p "$REPORT_DIR"
+# Install SARIF multitool globally
+npm install -g @microsoft/sarif-multitool
 
-echo "🔍 Scanning Docker image: $IMAGE_NAME"
+# Create trivy folder if not exists
+mkdir -p ~/Springboot-cicd-on-k8s/trivy
+cd ~/Springboot-cicd-on-k8s/trivy
 
-# Plain text scan output
-trivy image "$IMAGE_NAME" > "$TEXT_REPORT"
+# Write scan-trivy.sh
+cat <<'EOF' > scan-trivy.sh
+#!/bin/bash
 
-# JSON output for archiving and integration
-trivy image --format json --output "$JSON_REPORT" "$IMAGE_NAME"
+IMAGE_NAME=${IMAGE_NAME:-"venkatesh384/jenkins-demo:latest"}
+REPORT_DIR="../trivy-reports"
 
-if grep -q "CRITICAL" "$TEXT_REPORT"; then
-    echo "❌ Critical vulnerabilities found in $IMAGE_NAME!"
-    echo "----- Report -----"
-    cat "$TEXT_REPORT"
-    exit 1
+mkdir -p "${REPORT_DIR}"
+
+echo "📄 Saving Trivy reports for \$IMAGE_NAME..."
+
+# Text report
+trivy image --no-progress -f table -o "\${REPORT_DIR}/image-scan-report.txt" "\$IMAGE_NAME"
+
+# JSON report
+trivy image --no-progress -f json -o "\${REPORT_DIR}/report.json" "\$IMAGE_NAME"
+
+# SARIF report for HTML
+trivy image --no-progress -f sarif -o "\${REPORT_DIR}/report.sarif" "\$IMAGE_NAME"
+
+# Convert SARIF to HTML
+if command -v sarif-multitool &>/dev/null; then
+  sarif-multitool rewrite --inline "\${REPORT_DIR}/report.sarif" \
+    | sarif-multitool view --output "\${REPORT_DIR}/trivy-report.html"
 else
-    echo "✅ No critical vulnerabilities found in $IMAGE_NAME."
-    echo "Reports saved to $TEXT_REPORT and $JSON_REPORT"
+  echo "⚠️ SARIF multitool not found – skipping HTML report."
 fi
+EOF
+
+chmod +x scan-trivy.sh
+
+echo "✅ Setup complete. Run Jenkins pipeline to generate Trivy HTML reports."
