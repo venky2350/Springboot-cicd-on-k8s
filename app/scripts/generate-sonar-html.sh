@@ -2,8 +2,8 @@
 set -e
 
 # CONFIG: Update with your actual values
-SONAR_HOST_URL="http://54.162.210.95:9000"
-SONAR_TOKEN="sqp_769b23655fcfe48703da63bfa408319399a380e9"
+SONAR_HOST_URL="http://44.203.182.235:9000/"
+SONAR_TOKEN="sqp_6c15a28dd79bf8a9b25f0975f29eae5fdc325db3"
 PROJECT_KEY="Springboot-cicd-on-k8s"
 
 # Output directory for HTML report
