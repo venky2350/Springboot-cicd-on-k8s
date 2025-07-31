@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,13 +21,13 @@ spec:
             - containerPort: {{ .Values.springApp.port }}
           readinessProbe:
             httpGet:
-              path: /actuator/health  # If you use Spring Boot actuator
+              path: /
               port: {{ .Values.springApp.port }}
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /
               port: {{ .Values.springApp.port }}
             initialDelaySeconds: 15
             periodSeconds: 20
