@@ -91,8 +91,17 @@ pipeline {
         dir("${MANIFEST_DIR}") {
           withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
             sh '''
+              echo "📦 Validating KUBECONFIG path: $KUBECONFIG"
+              if [ ! -f "$KUBECONFIG" ]; then
+                echo "❌ ERROR: KUBECONFIG not found at $KUBECONFIG"
+                exit 1
+              fi
+
+              echo "🔍 Checking kubectl version:"
+              kubectl version --client
+
               echo "📁 Applying namespace..."
-              kubectl apply -f namespace.yaml
+              kubectl apply -f namespace.yaml || echo "⚠️ Namespace may already exist"
 
               echo "🛠️ Updating image version in deployment.yaml..."
               sed -i "s|image: .*|image: $DOCKER_IMAGE:$IMAGE_TAG|" deployment.yaml

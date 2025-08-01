@@ -648,6 +648,19 @@ docker run -d -p 8081:8080 -p 50000:50000 --name jenkins \
   -v /var/run/docker.sock:/var/run/docker.sock \
   jenkins/jenkins:lts
 
+docker stop jenkins && docker rm jenkins
+
+docker run -d \
+  --name jenkins \
+  -p 8081:8080 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $HOME/.kube:/root/.kube \                     # ✅ mount kube config
+  -v /usr/local/bin/kubectl:/usr/local/bin/kubectl \  # ✅ mount kubectl binary
+  -v /usr/bin/docker:/usr/bin/docker \
+  jenkins/jenkins:lts
+
+
+
 NOTE! : To free up port 8080, just kill that process:
 > sudo kill -9 2453
 Then verify it’s freed:
