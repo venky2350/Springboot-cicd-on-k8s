@@ -38,10 +38,10 @@ pipeline {
             withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
               sh '''
                 mvn clean verify sonar:sonar \
-                  -Dsonar.projectKey=Springboot-cicd-on-k8s \
-                  -Dsonar.projectName='Springboot-cicd-on-k8s' \
-                  -Dsonar.host.url=http://3.86.177.225:9000 \
-                  -Dsonar.token=$SONAR_TOKEN
+  -Dsonar.projectKey=Springboot-cicd-on-k8s \
+  -Dsonar.projectName='Springboot-cicd-on-k8s' \
+  -Dsonar.host.url=http://3.94.4.226:9000 \
+  -Dsonar.token=sqp_0a23551dd31d5e73ccb1e75de095349920ce0ff3
               '''
             }
           }
