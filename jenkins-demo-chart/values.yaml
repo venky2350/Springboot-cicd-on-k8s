@@ -1,7 +1,3 @@
 springApp:
+  image: venkatesh384/jenkins-demo:latest
   port: 8080
-  image: venkatesh384/jenkins-demo:5
-
-service:
-  type: NodePort
-  nodePort: 30036

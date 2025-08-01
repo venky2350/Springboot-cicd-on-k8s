@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring
-          image: {{ .Values.springApp.image }}
+          image: "{{ .Values.springApp.image }}"
           ports:
             - containerPort: {{ .Values.springApp.port }}
           readinessProbe:
