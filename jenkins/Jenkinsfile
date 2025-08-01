@@ -12,6 +12,7 @@ pipeline {
     IMAGE_TAG = "${BUILD_NUMBER}"
     REGISTRY_CREDS = 'dockerhub-creds'
     CHART_PATH = 'jenkins-demo-chart'
+    KUBECONFIG = '/home/ubuntu/.kube/config'
     APP_DIR = 'app'
   }
 
