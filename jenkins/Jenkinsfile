@@ -12,7 +12,7 @@ pipeline {
     IMAGE_TAG = "${BUILD_NUMBER}"
     REGISTRY_CREDS = 'dockerhub-creds'
     CHART_PATH = 'jenkins-demo-chart'
-    KUBECONFIG = '/home/ubuntu/.kube/config'
+    KUBECONFIG = '/var/lib/jenkins/.kube/config'
     APP_DIR = 'app'
   }
 
@@ -84,21 +84,16 @@ pipeline {
 
     stage('🚀 Deploy with Helm') {
       steps {
-        script {
-          docker.image('lachlanevenson/k8s-helm:latest')
-                .inside('-v $HOME/.kube:/root/.kube --entrypoint=""') {
-            withEnv(["KUBECONFIG=/root/.kube/config"]) {
-              dir("${CHART_PATH}") {
-                sh '''
-                  helm upgrade --install jenkins-demo . \
-                    --namespace dev --create-namespace \
-                    --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG
+        dir("${CHART_PATH}") {
+          withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
+            sh '''
+              helm upgrade --install jenkins-demo . \
+                --namespace dev --create-namespace \
+                --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG
 
-                  kubectl rollout status deployment/spring-app -n dev
-                  kubectl get all -n dev
-                '''
-              }
-            }
+              kubectl rollout status deployment/spring-app -n dev
+              kubectl get all -n dev
+            '''
           }
         }
       }
