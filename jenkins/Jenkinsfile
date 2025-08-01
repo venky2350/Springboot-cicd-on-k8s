@@ -7,13 +7,13 @@ pipeline {
   }
 
   environment {
-    SONARQUBE = 'SonarQube'
-    DOCKER_IMAGE = 'venkatesh384/jenkins-demo'
-    IMAGE_TAG = "${BUILD_NUMBER}"
-    REGISTRY_CREDS = 'dockerhub-creds'
-    CHART_PATH = 'jenkins-demo-chart'
-    KUBECONFIG = '/var/lib/jenkins/.kube/config'
-    APP_DIR = 'app'
+    SONARQUBE       = 'SonarQube'
+    DOCKER_IMAGE    = 'venkatesh384/jenkins-demo'
+    IMAGE_TAG       = "${BUILD_NUMBER}"
+    REGISTRY_CREDS  = 'dockerhub-creds'
+    KUBECONFIG      = '/var/lib/jenkins/.kube/config'
+    APP_DIR         = 'app'
+    MANIFEST_DIR    = 'manifests'
   }
 
   stages {
@@ -52,7 +52,11 @@ pipeline {
 
     stage('🐳 Docker Build & Push') {
       steps {
-        withCredentials([usernamePassword(credentialsId: "${REGISTRY_CREDS}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+        withCredentials([usernamePassword(
+          credentialsId: "${REGISTRY_CREDS}",
+          usernameVariable: 'DOCKER_USERNAME',
+          passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
           dir("${APP_DIR}") {
             sh '''
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
@@ -74,7 +78,7 @@ pipeline {
                 chmod +x scan-trivy.sh
                 ./scan-trivy.sh
               else
-                echo "⚠️ Trivy not installed, skipping."
+                echo "⚠️ Trivy not installed. Skipping scan."
               fi
             '''
           }
@@ -82,16 +86,25 @@ pipeline {
       }
     }
 
-    stage('🚀 Deploy with Helm') {
+    stage('🚀 Deploy with Kubernetes Manifests') {
       steps {
-        dir("${CHART_PATH}") {
+        dir("${MANIFEST_DIR}") {
           withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
             sh '''
-              helm upgrade --install jenkins-demo . \
-                --namespace dev --create-namespace \
-                --set springApp.image=$DOCKER_IMAGE:$IMAGE_TAG
+              echo "📁 Applying namespace..."
+              kubectl apply -f namespace.yaml
 
-              kubectl rollout status deployment/spring-app -n dev
+              echo "🛠️ Updating image version in deployment.yaml..."
+              sed -i "s|image: .*|image: $DOCKER_IMAGE:$IMAGE_TAG|" deployment.yaml
+
+              echo "🚀 Deploying to Kubernetes..."
+              kubectl apply -f deployment.yaml
+              kubectl apply -f service.yaml
+
+              echo "⏳ Waiting for rollout..."
+              kubectl rollout status deployment/jenkins-demo -n dev
+
+              echo "✅ Deployment complete:"
               kubectl get all -n dev
             '''
           }
