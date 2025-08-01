@@ -744,6 +744,52 @@ docker run -d --name nginx nginx
                              (or)
     2. https://www.fosstechnix.com/how-to-install-argocd-on-minikube/
 
+# ✅ Part 1: Trivy Installation (on Ubuntu/Linux/macOS)
+Trivy is an open-source vulnerability scanner for containers, filesystems, and Git repositories.
+
+🔧 Install Trivy on Ubuntu:
+
+sudo apt update
+
+# Install dependencies
+sudo apt install wget apt-transport-https gnupg lsb-release -y
+
+# Add Aqua Security's Trivy APT repository
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+
+# Install Trivy
+sudo apt update
+sudo apt install trivy -y
+
+📦 Verify Installation:
+
+trivy --version
+
+# ✅ Part 2: Helm Installation (on Ubuntu/Linux/macOS)
+
+Helm is a package manager for Kubernetes, used for deploying applications using Helm charts.
+
+🔧 Install Helm (v3) on Ubuntu:
+
+sudo apt update
+sudo apt install curl -y
+
+# Download Helm install script
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+sudo apt update
+sudo apt install helm -y
+
+📦 Verify Helm Installation:
+
+helm version
+
+
+
+
 
 
 # Monitoring tools:
