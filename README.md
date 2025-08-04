@@ -654,8 +654,8 @@ docker run -d \
   --name jenkins \
   -p 8081:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v $HOME/.kube:/root/.kube \                     # ✅ mount kube config
-  -v /usr/local/bin/kubectl:/usr/local/bin/kubectl \  # ✅ mount kubectl binary
+  -v $HOME/.kube:/root/.kube \
+  -v /usr/local/bin/kubectl:/usr/local/bin/kubectl \
   -v /usr/bin/docker:/usr/bin/docker \
   jenkins/jenkins:lts
 
