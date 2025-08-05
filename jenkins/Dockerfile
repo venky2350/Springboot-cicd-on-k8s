@@ -2,7 +2,6 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-
 # Install basic packages
 RUN apt-get update && apt-get install -y \
     git \
@@ -12,7 +11,10 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     ca-certificates \
     gnupg \
-    lsb-release
+    lsb-release \
+    unzip \
+    gnupg2 \
+    software-properties-common
 
 # Install Docker CLI
 RUN curl -fsSL https://get.docker.com | sh
@@ -20,7 +22,10 @@ RUN curl -fsSL https://get.docker.com | sh
 # Install kubectl (latest stable)
 RUN curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x kubectl \
-    && sudo mv kubectl /usr/local/bin/kubectl
+    && mv kubectl /usr/local/bin/kubectl
+
+# Install Trivy (latest)
+RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
 # Add Jenkins user to docker group
 RUN usermod -aG docker jenkins

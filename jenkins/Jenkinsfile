@@ -38,11 +38,11 @@ pipeline {
           withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
               sh '''
-                mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=Springboot-cicd-on-k8s \
-  -Dsonar.projectName='Springboot-cicd-on-k8s' \
-  -Dsonar.host.url=http://98.80.249.131:9000 \
-  -Dsonar.token=sqp_362bdbd2e3a6e6974a1324903c7cb9e9e908530a
+                mvn verify sonar:sonar \
+                  -Dsonar.projectKey=Springboot-cicd-on-k8s \
+                  -Dsonar.projectName=Springboot-cicd-on-k8s \
+                  -Dsonar.host.url=$SONAR_HOST_URL \
+                  -Dsonar.token=$SONAR_TOKEN
               '''
             }
           }
@@ -73,8 +73,9 @@ pipeline {
         dir('trivy') {
           withEnv(["IMAGE_NAME=${DOCKER_IMAGE}:${IMAGE_TAG}"]) {
             sh '''
+              echo "🔎 Checking for Trivy installation..."
               if command -v trivy >/dev/null 2>&1; then
-                echo "🔎 Running Trivy scan..."
+                echo "✅ Trivy is available, running scan..."
                 chmod +x scan-trivy.sh
                 ./scan-trivy.sh
               else
@@ -91,29 +92,21 @@ pipeline {
         dir("${MANIFEST_DIR}") {
           withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
             sh '''
-              echo "📦 Validating KUBECONFIG path: $KUBECONFIG"
-              if [ ! -f "$KUBECONFIG" ]; then
-                echo "❌ ERROR: KUBECONFIG not found at $KUBECONFIG"
-                exit 1
-              fi
-
-              echo "🔍 Checking kubectl version:"
+              echo "📦 Kubernetes Client Version:"
               kubectl version --client
 
-              echo "📁 Applying namespace..."
-              kubectl apply -f namespace.yaml || echo "⚠️ Namespace may already exist"
+              echo "🛠️ Applying namespace (if not exists)..."
+              kubectl apply -f namespace.yaml || echo "Namespace may already exist"
 
-              echo "🛠️ Updating image version in deployment.yaml..."
+              echo "🛠️ Updating deployment image..."
               sed -i "s|image: .*|image: $DOCKER_IMAGE:$IMAGE_TAG|" deployment.yaml
 
-              echo "🚀 Deploying to Kubernetes..."
+              echo "🚀 Applying manifests..."
               kubectl apply -f deployment.yaml
               kubectl apply -f service.yaml
 
-              echo "⏳ Waiting for rollout..."
+              echo "📈 Waiting for rollout..."
               kubectl rollout status deployment/jenkins-demo -n dev
-
-              echo "✅ Deployment complete:"
               kubectl get all -n dev
             '''
           }
