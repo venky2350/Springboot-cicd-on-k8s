@@ -3,18 +3,18 @@ version: '3.8'
 services:
   jenkins:
     build:
-      context: ./jenkins             # Uses updated Dockerfile with Trivy + kubectl
+      context: ./jenkins              # Dockerfile includes kubectl, Trivy, etc.
       dockerfile: Dockerfile
     container_name: jenkins
     user: root
     ports:
-      - "8081:8080"                  # Jenkins UI
-      - "50000:50000"                # Jenkins agent communication
+      - "8081:8080"                   # Jenkins UI
+      - "50000:50000"                 # Jenkins agent communication
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/ubuntu/.kube/config:/root/.kube/config        # Kubernetes config
-      - /home/ubuntu/.minikube:/root/.minikube              # Minikube certs
+      - /home/ubuntu/jenkins-kube-config:/root/.kube/config  # 🔄 Rewritten config
+      - /home/ubuntu/.minikube:/root/.minikube               # Minikube certs
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
 
@@ -22,13 +22,13 @@ services:
     image: venkatesh384/jenkins-demo:latest
     container_name: jenkins-demo
     ports:
-      - "8080:8080"                  # Expose Spring Boot app (for local test only)
+      - "8080:8080"                   # Optional: Local testing only
 
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
     ports:
-      - "9000:9000"                  # SonarQube UI
+      - "9000:9000"
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
     volumes:
