@@ -42,7 +42,7 @@ pipeline {
   -Dsonar.projectKey=Springboot-cicd-on-k8s \
   -Dsonar.projectName='Springboot-cicd-on-k8s' \
   -Dsonar.host.url=http://98.82.183.187:9000 \
-  -Dsonar.token=sqp_bd8bdf482c39027745a7c1d49fc8cf2eda965623
+  -Dsonar.token=sqp_3255acc3d1589a70e2194c099e7197105dd60792
               '''
             }
           }
