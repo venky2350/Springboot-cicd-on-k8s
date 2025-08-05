@@ -38,11 +38,11 @@ pipeline {
           withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
               sh '''
-                mvn verify sonar:sonar \
-                  -Dsonar.projectKey=Springboot-cicd-on-k8s \
-                  -Dsonar.projectName=Springboot-cicd-on-k8s \
-                  -Dsonar.host.url=$SONAR_HOST_URL \
-                  -Dsonar.token=$SONAR_TOKEN
+                mvn clean verify sonar:sonar \
+  -Dsonar.projectKey=Springboot-cicd-on-k8s \
+  -Dsonar.projectName='Springboot-cicd-on-k8s' \
+  -Dsonar.host.url=http://98.82.183.187:9000 \
+  -Dsonar.token=sqp_bd8bdf482c39027745a7c1d49fc8cf2eda965623
               '''
             }
           }
