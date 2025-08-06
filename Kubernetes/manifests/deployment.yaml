@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: jenkins-demo
-        image: venkatesh384/springboot-cicd-on-k8s:v5
+        image: venkatesh384/springboot-cicd-on-k8s:latest
         ports:
         - containerPort: 8080
