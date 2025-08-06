@@ -4,42 +4,45 @@ pipeline {
   environment {
     KUBECONFIG = "/root/.kube/config"
     DOCKER_IMAGE = "venkatesh384/springboot-cicd-on-k8s"
-    IMAGE_TAG = "v5"
+    IMAGE_TAG = "latest"
     MANIFEST_DIR = "manifests"
   }
- stage('🚀 Deploy with Kubernetes Manifests') {
-  steps {
-    dir("${MANIFEST_DIR}") {
-      withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-        sh '''
-          echo "📍 KUBECONFIG Path: $KUBECONFIG"
-          ls -l $KUBECONFIG
 
-          echo "🔍 Kubernetes Client Version:"
-          kubectl version --client
+  stages {
+    stage('🚀 Deploy with Kubernetes Manifests') {
+      steps {
+        dir("${MANIFEST_DIR}") {
+          withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
+            sh '''
+              echo "📍 KUBECONFIG Path: $KUBECONFIG"
+              ls -l $KUBECONFIG
 
-          echo "🔧 Applying namespace (ignore if exists)"
-          kubectl apply -f namespace.yaml || echo "Namespace already exists"
+              echo "🔍 Kubernetes Client Version:"
+              kubectl version --client
 
-          echo "📝 Showing original deployment.yaml"
-          cat deployment.yaml
+              echo "🔧 Applying namespace (ignore if exists)"
+              kubectl apply -f namespace.yaml || echo "Namespace already exists"
 
-          echo "🔄 Updating image in deployment.yaml"
-          sed -i "s|image: .*|image: $DOCKER_IMAGE:$IMAGE_TAG|" deployment.yaml
-          cat deployment.yaml
+              echo "📝 Showing original deployment.yaml"
+              cat deployment.yaml
 
-          echo "🚀 Applying deployment and service"
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+              echo "🔄 Updating image in deployment.yaml"
+              sed -i "s|image: .*|image: $DOCKER_IMAGE:$IMAGE_TAG|" deployment.yaml
+              cat deployment.yaml
 
-          echo "⏳ Waiting for deployment rollout"
-          kubectl rollout status deployment/jenkins-demo -n dev
+              echo "🚀 Applying deployment and service"
+              kubectl apply -f deployment.yaml
+              kubectl apply -f service.yaml
 
-          echo "📦 Final state of resources in 'dev' namespace"
-          kubectl get all -n dev
-        '''
+              echo "⏳ Waiting for deployment rollout"
+              kubectl rollout status deployment/jenkins-demo -n dev
+
+              echo "📦 Final state of resources in 'dev' namespace"
+              kubectl get all -n dev
+            '''
+          }
+        }
       }
     }
   }
-}
 }
