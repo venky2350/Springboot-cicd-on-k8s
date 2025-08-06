@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+
+  environment {
+    KUBECONFIG = "/root/.kube/config"
+    DOCKER_IMAGE = "venkatesh384/springboot-cicd-on-k8s"
+    IMAGE_TAG = "v5"
+    MANIFEST_DIR = "manifests"
+  }
+
+  stages {
+    stage('🚀 Deploy to Kubernetes') {
+      steps {
+        dir("${MANIFEST_DIR}") {
+          withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
+            sh '''
+              echo "📦 Kubernetes Client Version:"
+              kubectl version --client
+
+              echo "🛠️ Applying namespace..."
+              kubectl apply -f namespace.yaml || echo "Already exists"
+
+              echo "🛠️ Updating deployment image..."
+              sed -i "s|image: .*|image: $DOCKER_IMAGE:$IMAGE_TAG|" deployment.yaml
+
+              echo "🚀 Applying manifests..."
+              kubectl apply -f deployment.yaml
+              kubectl apply -f service.yaml
+
+              echo "📈 Waiting for rollout..."
+              kubectl rollout status deployment/jenkins-demo -n dev
+              kubectl get all -n dev
+            '''
+          }
+        }
+      }
+    }
+  }
+}

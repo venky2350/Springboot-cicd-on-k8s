@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-demo
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-demo
+  template:
+    metadata:
+      labels:
+        app: jenkins-demo
+    spec:
+      containers:
+      - name: jenkins-demo
+        image: venkatesh384/springboot-cicd-on-k8s:v5
+        ports:
+        - containerPort: 8080
