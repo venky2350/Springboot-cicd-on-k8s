@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    KUBECONFIG = "/root/.kube/config"
+    KUBECONFIG = "/home/ubuntu/.kube/config"
     DOCKER_IMAGE = "venkatesh384/springboot-cicd-on-k8s"
     IMAGE_TAG = "latest"
     MANIFEST_DIR = "manifests"
